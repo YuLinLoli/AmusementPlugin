@@ -1,6 +1,6 @@
 package com.mirai.kotlinUtil
 
-import net.mamoe.mirai.internal.utils.MiraiProtocolInternal
+import net.mamoe.mirai.internal.utils.*
 import net.mamoe.mirai.utils.BotConfiguration
 import java.time.Instant
 import java.time.OffsetDateTime
