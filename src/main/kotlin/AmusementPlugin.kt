@@ -1,10 +1,16 @@
 package com.mirai
 
 
+import com.mirai.config.AdminConfig
+import com.mirai.module.AdminConfigEdit.adminSetting
+import com.mirai.module.AdminConfigEdit.adminSettingQc
+import com.mirai.module.AdminConfigEdit.blackListSetting
+import com.mirai.module.AdminConfigEdit.blackListSettingQh
 import com.mirai.module.GroupCaoFriend.cao
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.event.events.FriendMessageEvent
 
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
@@ -18,26 +24,37 @@ object AmusementPlugin : KotlinPlugin(
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
-        //测试用，导出插件的时候请注释掉！！！
-//        if (SemVersion.parseRangeRequirement("<= 2.14.0").test(MiraiConsole.version)) {
-//            logger.warning { "Mirai版本低于预期，将升级协议版本" }
-//            FixProtocolVersion.update()
-//        }
+        AdminConfig.reload()
+        if (AdminConfig.master < 100){
+            println("第一次使用请进入配置目录：config->com.mirai.AmusementPlugin来配置插件的管理员，重启插件后即可正常使用！")
+        }else{
+            println("草群友的插件主人是：" + AdminConfig.master)
+        }
     }
 
-    @JvmStatic
-    //此处可填写机器人主人的qq，让群员们草不到你
-    val admin = 123456L
-
-    @JvmStatic
-    //此处可加载文件并填写黑名单
-    var gruops = arrayOf(123456L)
 
     override fun onEnable() {
+        AdminConfig.reload()
+        AdminConfig.save()
         //监听群消息
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
             //草群友插件执行
-            cao(admin, gruops, this)
+            cao(this)
+            //设置插件管理员执行
+            adminSetting(this)
+            adminSettingQc(this)
+            //设置群黑名单执行
+            blackListSetting(this)
+            blackListSettingQh(this)
+
+        }
+        globalEventChannel().subscribeAlways<FriendMessageEvent> {
+            //设置插件管理员执行
+            adminSetting(this)
+            adminSettingQc(this)
+            //设置群黑名单执行
+            blackListSetting(this)
+            blackListSettingQh(this)
         }
 
 

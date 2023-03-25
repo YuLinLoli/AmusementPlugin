@@ -1,21 +1,21 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.6.10"
+    val kotlinVersion = "1.8.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("net.mamoe.mirai-console") version "2.14.0"
+    id("net.mamoe.mirai-console") version "2.15.0-M1"
 }
 
 group = "com.mirai"
 version = "1.0.0"
 
 repositories {
-//    mavenLocal()
-//    maven("https://maven.aliyun.com/repository/gradle-plugin")
-//    maven("https://maven.aliyun.com/repository/central")
+    mavenLocal()
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
+    maven("https://maven.aliyun.com/repository/central")
     mavenCentral()
 }
 dependencies {
