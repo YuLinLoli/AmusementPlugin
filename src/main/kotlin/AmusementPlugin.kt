@@ -25,11 +25,6 @@ object AmusementPlugin : KotlinPlugin(
 ) {
     override fun PluginComponentStorage.onLoad() {
         AdminConfig.reload()
-        if (AdminConfig.master < 100){
-            println("第一次使用请进入配置目录：config->com.mirai.AmusementPlugin来配置插件的管理员，重启插件后即可正常使用！")
-        }else{
-            println("草群友的插件主人是：" + AdminConfig.master)
-        }
     }
 
 

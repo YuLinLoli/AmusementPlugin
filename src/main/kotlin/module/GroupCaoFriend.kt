@@ -49,13 +49,15 @@ object GroupCaoFriend {
                         message.add(" 万中无一，孤独终老。（百分之1的概率也能中快去抽卡买彩票.jpg）")
                     } else if (!tFMaster && randomPd < 6) {
                         message.add(" 呜呜呜，只因无力(╯‵□′)╯︵┻━┻，你直接日歪了，细狗")
-                    } else if (randomPd <= 75) {
+                    } else if (randomPd <= 75  && member.id != master) {
                         message.add(" 成功草到了" + member.nameCardOrNick + "(${member.id})")
 
                         headImage?.let { it1 -> message.add(it1) }
-                    }else if (randomPd <= 95){
+                    } else if (randomPd <= 95 && member.id != master) {
                         message.add(" 恭喜你和" + member.nameCardOrNick + "(${member.id})" + "喜结良缘❤")
                         headImage?.let { it1 -> message.add(it1) }
+                    } else if (member.id == master && event.sender.id != master){
+                        message.add(" 就凭你也想草我主人？")
                     }
                 }else if (!tFMaster){
                     message.add(" 恭喜你和自己喜结良缘❤（自交）")
