@@ -22,7 +22,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.jsoup:jsoup:1.15.4")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("net.mamoe:mirai-core-jvm:2.14.0")
+    implementation("net.mamoe:mirai-core-jvm:2.15.0-M1")
     implementation("top.jfunc.common:converter:1.8.0")
 
 
