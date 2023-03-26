@@ -6,6 +6,7 @@ import com.mirai.module.AdminConfigEdit.adminSetting
 import com.mirai.module.AdminConfigEdit.adminSettingQc
 import com.mirai.module.AdminConfigEdit.blackListSetting
 import com.mirai.module.AdminConfigEdit.blackListSettingQh
+import com.mirai.module.AdminConfigEdit.blackListShow
 import com.mirai.module.GroupCaoFriend.cao
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -20,7 +21,7 @@ object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "com.mirai.AmusementPlugin",
         name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.0.0",
+        version = "1.0.1",
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
@@ -50,6 +51,7 @@ object AmusementPlugin : KotlinPlugin(
             //设置群黑名单执行
             blackListSetting(this)
             blackListSettingQh(this)
+            blackListShow(this)
         }
 
 
