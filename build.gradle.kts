@@ -13,9 +13,9 @@ group = "com.mirai"
 version = "1.0.0"
 
 repositories {
-    mavenLocal()
-    maven("https://maven.aliyun.com/repository/gradle-plugin")
-    maven("https://maven.aliyun.com/repository/central")
+//    mavenLocal()
+//    maven("https://maven.aliyun.com/repository/gradle-plugin")
+//    maven("https://maven.aliyun.com/repository/central")
     mavenCentral()
 }
 dependencies {
