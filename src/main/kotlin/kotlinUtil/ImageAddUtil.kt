@@ -10,7 +10,7 @@ object ImageAddUtil {
      */
     fun imageAdd(group: GroupImage, groupImageList: GroupImageConfig, imageName: String): Int{
 
-        var gi = groupImageList.groupImage
+        val gi = groupImageList.groupImage
         //判断文件是否有内容，如果没有返回10，让上级创建列表
         if (gi.size == 0){
             return 10
@@ -27,6 +27,8 @@ object ImageAddUtil {
                 gi[i].imageList.add(imageName)
                 groupImageList.save()
                 return 1
+            }else{
+                return 10
             }
         }
 

@@ -11,4 +11,6 @@ import net.mamoe.mirai.console.data.value
 object GroupImageConfig : AutoSavePluginConfig("GroupImageConfig") {
     @ValueName("groupImage")
     var groupImage: MutableList<GroupImage> by value()
+    @ValueName("groupImageAd")
+    var groupImageAd: String by value("添加表情")
 }

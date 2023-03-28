@@ -23,20 +23,19 @@ class GroupImageEdit {
             var saveTf = false
             val groupImage = GroupImage(0L, true, arrayListOf())
             groupImage.groupId = event.group.id
-            if (!mess.contains("添加")){
+            if (!mess.startsWith(GroupImageConfig.groupImageAd)){
                 return false
             }
             //判断是否有添加指令，并且判断是否为主人！然后取出图片以及图片名称
             if (event.sender.id == AdminConfig.master) {
                 for (m in event.message) {
-                    if (m.contentToString().contains("添加")) {
-                        println(m.toString())
-                        imageName = m.contentToString().split("加")[1]
+                    if (m.contentToString().startsWith(GroupImageConfig.groupImageAd)) {
+                        imageName = m.contentToString().split(GroupImageConfig.groupImageAd)[1].replace("\n","")
                     }
                     if (m.toString().contains("image")) {
                         image = m as Image
                         imageName += m.toString().split("}")[1].split(",")[0]
-                        println(imageName)
+
                     }
                 }
             }

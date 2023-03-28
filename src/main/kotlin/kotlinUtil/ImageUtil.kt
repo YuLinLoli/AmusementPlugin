@@ -41,7 +41,6 @@ class ImageUtil {
                 val s =
                     AmusementPlugin.dataFolderPath.pathString + File.separator + "image" + File.separator + imageName
                 val file = File(s)
-                println("me:$s")
                 if (file.exists()){
                     val input = withContext(Dispatchers.IO) {
                         FileInputStream(file)
