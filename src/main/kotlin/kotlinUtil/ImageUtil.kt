@@ -6,17 +6,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.createDirectory
+import kotlin.io.path.exists
 import kotlin.io.path.pathString
 
 
@@ -33,14 +34,53 @@ class ImageUtil {
             )
 
         /**
+         * 从本地加载Image
+         */
+        suspend fun loadImage(event: GroupMessageEvent,imageName: String): Image?{
+            try {
+                val s =
+                    AmusementPlugin.dataFolderPath.pathString + File.separator + "image" + File.separator + imageName
+                val file = File(s)
+                println("me:$s")
+                if (file.exists()){
+                    val input = withContext(Dispatchers.IO) {
+                        FileInputStream(file)
+                    }
+                    val out = ByteArrayOutputStream()
+                    val buffer = ByteArray(2048)
+                    var len: Int
+                    while (withContext(Dispatchers.IO) {
+                            input.read(buffer)
+                        }.also { len = it } > 0) {
+                        out.write(buffer, 0, len)
+                    }
+                    val toExternalResource =
+                        out.toByteArray().toExternalResource()
+                    val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+                    withContext(Dispatchers.IO) {
+                        toExternalResource.close()
+                    }
+                    return Image(imageId)
+                }
+                println("error in loadImage!62")
+                return null
+            }catch (e: Exception){
+                println(e.message)
+                println("error in loadImage!65")
+                return null
+            }
+
+        }
+
+        /**
          * 保存图片到指定位置
          * @param imageUri 图片网址
          * @return Boolean 是否保存成功
          * @author 岚雨凛<cheng_ying@outlook.com>
          */
+
         suspend fun saveImage(imageUri: String, imageName: String): Boolean {
             val infoStream = ByteArrayOutputStream()
-
             try {
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response = client.build().newCall(request).execute()
@@ -58,10 +98,13 @@ class ImageUtil {
                         infoStream.write(buffer, 0, len)
                     }
                 }
-                infoStream.write((Math.random() * 100).toInt() + 1)
+//                infoStream.write((Math.random() * 100).toInt() + 1)
 
 
                 val imagePath = AmusementPlugin.dataFolderPath.resolve("image")
+                if (!imagePath.exists()){
+                    imagePath.createDirectory()
+                }
                 withContext(Dispatchers.IO) {
                     FileOutputStream(imagePath.pathString + File.separator + imageName)
                         .write(infoStream.toByteArray())

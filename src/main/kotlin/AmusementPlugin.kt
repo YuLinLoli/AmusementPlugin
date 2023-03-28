@@ -10,6 +10,7 @@ import com.mirai.module.AdminConfigEdit.blackListSettingQh
 import com.mirai.module.AdminConfigEdit.blackListShow
 import com.mirai.module.GroupCaoFriend.cao
 import com.mirai.module.GroupImageEdit.Companion.imageAdd
+import com.mirai.module.GroupImageEdit.Companion.sendImage
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -48,7 +49,11 @@ object AmusementPlugin : KotlinPlugin(
             blackListSetting(this)
             blackListSettingQh(this)
             //添加表情图片执行
-            imageAdd(this)
+            val b = imageAdd(this)
+            if (!b){
+                sendImage(this)
+            }
+
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
             //设置插件管理员执行
