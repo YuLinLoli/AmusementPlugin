@@ -1,6 +1,7 @@
 package com.mirai.kotlinUtil
 
 
+import com.mirai.AmusementPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.event.events.FriendMessageEvent
@@ -13,7 +14,10 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.pathString
 
 
 class ImageUtil {
@@ -27,6 +31,48 @@ class ImageUtil {
                 "user-agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
             )
+
+        /**
+         * 保存图片到指定位置
+         * @param imageUri 图片网址
+         * @return Boolean 是否保存成功
+         * @author 岚雨凛<cheng_ying@outlook.com>
+         */
+        suspend fun saveImage(imageUri: String, imageName: String): Boolean {
+            val infoStream = ByteArrayOutputStream()
+
+            try {
+                val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
+                val response: Response = client.build().newCall(request).execute()
+
+
+                val `in` = response.body?.byteStream()
+
+
+                val buffer = ByteArray(2048)
+                var len: Int
+                if (`in` != null) {
+                    while (withContext(Dispatchers.IO) {
+                            `in`.read(buffer)
+                        }.also { len = it } > 0) {
+                        infoStream.write(buffer, 0, len)
+                    }
+                }
+                infoStream.write((Math.random() * 100).toInt() + 1)
+
+
+                val imagePath = AmusementPlugin.dataFolderPath.resolve("image")
+                withContext(Dispatchers.IO) {
+                    FileOutputStream(imagePath.pathString + File.separator + imageName)
+                        .write(infoStream.toByteArray())
+                }
+
+                return true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
+            }
+        }
 
         /**
          * （群）通过网址直接转换为可发送的Image
