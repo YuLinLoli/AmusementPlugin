@@ -1,14 +1,19 @@
 package com.mirai.module
 
 
+import com.mirai.AmusementPlugin.save
 import com.mirai.config.AdminConfig
+import com.mirai.config.CdConfig
 import com.mirai.kotlinUtil.BlackGroupJudge
 import com.mirai.kotlinUtil.ImageUtil
+import com.mirai.pojo.GroupSender
+import com.mirai.pojo.Sender
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import java.util.*
+import kotlin.math.abs
 
 /**
  * 草群友模块（将来可添加被草模块）
@@ -19,8 +24,9 @@ object GroupCaoFriend {
      * @param event 群消息事件
      *
      */
-    suspend fun cao(event: GroupMessageEvent) {
+    suspend fun cao(event: GroupMessageEvent): Boolean {
         if (event.message.contentToString() == "草群友") {
+
             //主人id
             val master = AdminConfig.master
             //判断是不是主人
@@ -31,8 +37,12 @@ object GroupCaoFriend {
             val message = MessageChainBuilder()
             //创建判断用的随机数
             val randomPd = Random().nextInt(100)
+            //判断是否在CD中！
+            if (!caoCdPd(event)) {
+                return false
+            }
             //不是黑名单的群就继续执行
-            if (!tFBlackGroupList){
+            if (!tFBlackGroupList) {
                 var i = "0"
                 val list = event.group.members
                 val size = list.size
@@ -63,9 +73,11 @@ object GroupCaoFriend {
                     } else if (member.id == master && event.sender.id != master) {
                         i = "草master失败"
                         message.add(" 就凭你也想草我主人？")
-                    } else {
+                    } else if (event.sender.id != master) {
                         i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
                         message.add("就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!")
+                    } else {
+                        message.add("我最喜欢主人了！❤")
                     }
                 } else if (!tFMaster) {
                     message.add(" 恭喜你和自己喜结良缘❤（自交）")
@@ -83,11 +95,55 @@ object GroupCaoFriend {
                                     "触发的指令为：${i}"
                         )
                 }
+
                 event.group.sendMessage(message.build())
 
-            }else{
+            } else {
                 println("排除群，不执行草群友指令！")
             }
         }
+        return true
+    }
+
+    private suspend fun caoCdPd(event: GroupMessageEvent): Boolean {
+        val timeMillis = System.currentTimeMillis()
+        val gid = event.group.id
+        val qid = event.sender.id
+        if (qid == AdminConfig.master) {
+            return true
+        }
+        if (CdConfig.groupSender.isEmpty()) {
+            val list: MutableList<Sender> = listOf<Sender>().toMutableList()
+            list.add(Sender(qid, timeMillis))
+            CdConfig.groupSender.add(GroupSender(gid, list))
+            CdConfig.save()
+            return true
+        }
+        for (g in CdConfig.groupSender) {
+            if (g.gid == gid) {
+                for (q in g.sender) {
+                    if (qid == q.qid) {
+                        if (timeMillis - q.cd > 3600000) {
+                            q.cd = timeMillis
+                            CdConfig.save()
+                            return true
+                        }
+                        val times = (timeMillis - q.cd - 3600000) / 1000
+                        event.group.sendMessage("请等待${abs(times)}秒后再使用“草群友”指令！！")
+                    } else {
+                        q.qid = qid
+                        q.cd = timeMillis
+                        CdConfig.save()
+                        return true
+                    }
+                }
+            } else {
+                g.gid = gid
+                g.sender.add(Sender(qid, timeMillis))
+                CdConfig.save()
+                return true
+            }
+        }
+        return false
     }
 }
