@@ -152,7 +152,7 @@ object GroupCaoFriend {
             }
 
         }
-
+        //判断是否有该群，没有就创建群把成员CD加入
         if (!gTF) {
             val list: MutableList<Sender> = listOf<Sender>().toMutableList()
             list.add(Sender(qid, timeMillis))
@@ -160,6 +160,7 @@ object GroupCaoFriend {
             CdConfig.save()
             return true
         }
+        //判断是否有该群友，没有就加入
         if (!qTf) {
             for (g in CdConfig.groupSender) {
                 if (g.gid == gid) {
@@ -169,6 +170,7 @@ object GroupCaoFriend {
                 }
             }
         }
+        //如果在CD就回复在CD
         if (!CD) {
             val times = (3600000 - (timeMillis - cdTime)) / 1000
             println("CD还有${times}")
