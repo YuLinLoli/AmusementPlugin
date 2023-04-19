@@ -16,7 +16,7 @@ import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.events.FriendMessageEvent
-import net.mamoe.mirai.event.events.GroupMemberEvent
+import net.mamoe.mirai.event.events.GroupEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
 
@@ -25,7 +25,7 @@ object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "com.mirai.AmusementPlugin",
         name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.0.3",
+        version = "1.0.4",
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
@@ -68,7 +68,9 @@ object AmusementPlugin : KotlinPlugin(
             blackListSettingQh(this)
             blackListShow(this)
         }
-        globalEventChannel().subscribeAlways<GroupMemberEvent> { }
+        globalEventChannel().subscribeAlways<GroupEvent> {
+
+        }
 
 
     }
