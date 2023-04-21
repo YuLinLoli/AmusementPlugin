@@ -26,7 +26,10 @@ object GroupCaoFriend {
      */
     suspend fun cao(event: GroupMessageEvent): Boolean {
         if (event.message.contentToString() == "草群友") {
-
+            //判断是否在CD中！
+            if (!caoCdPd(event)) {
+                return false
+            }
             //主人id
             val master = AdminConfig.master
             //判断是不是主人
@@ -37,17 +40,13 @@ object GroupCaoFriend {
             val message = MessageChainBuilder()
             //创建判断用的随机数
             val randomPd = Random().nextInt(100)
-            //判断是否在CD中！
-            if (!caoCdPd(event)) {
-                return false
-            }
+
             //不是黑名单的群就继续执行
             if (!tFBlackGroupList) {
                 var i = "0"
                 val list = event.group.members
                 val size = list.size
                 var member: NormalMember
-
                 //排除主人
                 while (true) {
                     //随机出一位幸运儿
