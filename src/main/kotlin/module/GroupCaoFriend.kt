@@ -8,12 +8,12 @@ import com.mirai.kotlinUtil.BlackGroupJudge
 import com.mirai.kotlinUtil.ImageUtil
 import com.mirai.pojo.GroupSender
 import com.mirai.pojo.Sender
+import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import java.util.*
-import kotlin.math.abs
 
 /**
  * 草群友模块（将来可添加被草模块）
@@ -46,10 +46,22 @@ object GroupCaoFriend {
                 var i = "0"
                 val list = event.group.members
                 val size = list.size
-                //随机出一位幸运儿
-                val random = Random().nextInt(size - 1)
-                //获取这位幸运儿
-                val member = list.elementAt(random)
+                var member: NormalMember
+
+                //排除主人
+                while (true) {
+                    //随机出一位幸运儿
+                    val random = Random().nextInt(size - 1)
+                    //获取这位幸运儿
+                    member = list.elementAt(random)
+                    if (event.sender.id == master) {
+                        break
+                    }
+                    if (member.id != AdminConfig.master) {
+                        break
+                    }
+                }
+
                 //判断是不是自己草到了自己
                 val tFMe = event.sender.id == member.id
                 //获取他的头像
