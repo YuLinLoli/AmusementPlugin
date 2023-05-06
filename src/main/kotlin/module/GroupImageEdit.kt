@@ -105,9 +105,6 @@ class GroupImageEdit {
                     }
                 }
             }
-
-
-
             return false
         }
 

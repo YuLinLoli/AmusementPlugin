@@ -53,9 +53,11 @@ object GroupCaoFriend {
                     val random = Random().nextInt(size - 1)
                     //获取这位幸运儿
                     member = list.elementAt(random)
+                    //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和枫喜结良缘❤”）
                     if (event.sender.id == master) {
                         break
                     }
+                    //如果幸运儿的ID不是主人的ID的话就继续执行程序，否则继续循环新的幸运儿
                     if (member.id != AdminConfig.master) {
                         break
                     }
@@ -81,9 +83,6 @@ object GroupCaoFriend {
                         i = "正常喜结良缘"
                         message.add(" 恭喜你和" + member.nameCardOrNick + "(${member.id})" + "喜结良缘❤")
                         headImage?.let { it1 -> message.add(it1) }
-                    } else if (member.id == master && event.sender.id != master) {
-                        i = "草master失败"
-                        message.add(" 就凭你也想草我主人？")
                     } else if (event.sender.id != master) {
                         i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
                         message.add("就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!")
