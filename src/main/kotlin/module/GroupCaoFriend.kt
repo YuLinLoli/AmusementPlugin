@@ -3,6 +3,8 @@ package com.mirai.module
 
 import com.mirai.AmusementPlugin.save
 import com.mirai.config.AdminConfig
+import com.mirai.config.BlackListConfig
+import com.mirai.config.BlackListConfig.blackList
 import com.mirai.config.CdConfig
 import com.mirai.kotlinUtil.BlackGroupJudge
 import com.mirai.kotlinUtil.ImageUtil
@@ -57,10 +59,21 @@ object GroupCaoFriend {
                     if (event.sender.id == master) {
                         break
                     }
+                    //如果是黑名单的qq，则排除他
+                    for (n in blackList) {
+                        if (n.qq == member.id) {
+                            continue
+                        }
+                        //如果是黑名单qq触发的指令直接GG
+                        if (n.qq == event.sender.id) {
+                            return false
+                        }
+                    }
                     //如果幸运儿的ID不是主人的ID的话就继续执行程序，否则继续循环新的幸运儿
                     if (member.id != AdminConfig.master) {
                         break
                     }
+
                 }
 
                 //判断是不是自己草到了自己
