@@ -6,6 +6,7 @@ import com.mirai.config.AdminConfig
 import com.mirai.config.BlackListConfig
 import com.mirai.config.BlackListConfig.blackList
 import com.mirai.config.CdConfig
+import com.mirai.kotlinUtil.AdminAndMasterJudge
 import com.mirai.kotlinUtil.BlackGroupJudge
 import com.mirai.kotlinUtil.ImageUtil
 import com.mirai.pojo.GroupSender
@@ -35,7 +36,7 @@ object GroupCaoFriend {
             //主人id
             val master = AdminConfig.master
             //判断是不是主人
-            val tFMaster = event.sender.id == master
+            val tFMaster = AdminAndMasterJudge.isMaster(event)
             //判断是不是黑名单中的群
             val tFBlackGroupList = BlackGroupJudge.blackGroupPd(event)
             //创建消息
@@ -56,7 +57,7 @@ object GroupCaoFriend {
                     //获取这位幸运儿
                     member = list.elementAt(random)
                     //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和枫喜结良缘❤”）
-                    if (event.sender.id == master) {
+                    if (tFMaster) {
                         break
                     }
                     //如果是黑名单的qq，则排除他
@@ -107,17 +108,6 @@ object GroupCaoFriend {
                 } else {
                     message.add(" 恭喜主人和枫喜结良缘❤")
                 }
-                val test = MessageChainBuilder()
-                test.add(At(event.sender.id))
-                if (message == test) {
-                    event.bot.getFriend(AdminConfig.master)
-                        ?.sendMessage(
-                            "发现有人触发空消息体的bug！\n" +
-                                    "触发指令的人是：${event.sender.nameCardOrNick}(${event.sender.id})\n" +
-                                    "被草的人是：${member.nameCardOrNick}(${member.id})\n" +
-                                    "触发的指令为：${i}"
-                        )
-                }
 
                 event.group.sendMessage(message.build())
 
@@ -143,7 +133,7 @@ object GroupCaoFriend {
         //如果有CD就设值！
         var cdTime = 0L
         //判断是否为主人发的
-        if (qid == AdminConfig.master) {
+        if (AdminAndMasterJudge.isMaster(event)) {
             return true
         }
         //第一次创建文件！

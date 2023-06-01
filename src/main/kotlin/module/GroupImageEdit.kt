@@ -3,6 +3,7 @@ package com.mirai.module
 import com.mirai.AmusementPlugin.save
 import com.mirai.config.AdminConfig
 import com.mirai.config.GroupImageConfig
+import com.mirai.kotlinUtil.AdminAndMasterJudge
 import com.mirai.kotlinUtil.ImageAddUtil
 import com.mirai.kotlinUtil.ImageUtil
 import com.mirai.kotlinUtil.ImageUtil.Companion.loadImage
@@ -27,7 +28,7 @@ class GroupImageEdit {
                 return false
             }
             //判断是否有添加指令，并且判断是否为主人！然后取出图片以及图片名称
-            if (event.sender.id == AdminConfig.master) {
+            if (AdminAndMasterJudge.isAdminOrMaster(event)) {
                 for (m in event.message) {
                     if (m.contentToString().startsWith(GroupImageConfig.groupImageAd)) {
                         imageName = m.contentToString().split(GroupImageConfig.groupImageAd)[1].replace("\n","")

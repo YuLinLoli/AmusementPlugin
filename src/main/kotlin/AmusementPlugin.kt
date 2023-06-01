@@ -1,7 +1,9 @@
 package com.mirai
 
 
+import com.mirai.AmusementPlugin.save
 import com.mirai.config.AdminConfig
+import com.mirai.config.BlackListConfig
 import com.mirai.config.CdConfig
 import com.mirai.config.GroupImageConfig
 import com.mirai.module.AdminConfigEdit.adminSetting
@@ -32,16 +34,15 @@ object AmusementPlugin : KotlinPlugin(
         AdminConfig.reload()
         GroupImageConfig.reload()
         CdConfig.reload()
+        BlackListConfig.reload()
     }
 
 
     override fun onEnable() {
         AdminConfig.reload()
-        AdminConfig.save()
         GroupImageConfig.reload()
-        GroupImageConfig.save()
         CdConfig.reload()
-        CdConfig.save()
+        BlackListConfig.reload()
         //监听群消息
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
             //草群友插件执行
@@ -71,8 +72,10 @@ object AmusementPlugin : KotlinPlugin(
         globalEventChannel().subscribeAlways<GroupEvent> {
 
         }
-
-
+        CdConfig.save()
+        GroupImageConfig.save()
+        AdminConfig.save()
+        BlackListConfig.save()
     }
 
 }
