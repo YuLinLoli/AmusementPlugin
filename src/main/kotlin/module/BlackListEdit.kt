@@ -1,22 +1,35 @@
 package com.yulin.module
 
 import com.yulin.config.BlackListConfig.blackList
-import com.yulin.kotlinUtil.AdminAndMasterJudge
+import com.yulin.kotlinUtil.AdminAndMasterJudge.isAdminOrMaster
 import com.yulin.pojo.BlackPojo
 import net.mamoe.mirai.event.events.MessageEvent
 
 object BlackListEdit {
-    suspend fun add(event: MessageEvent) {
+    suspend fun blackListMain(e: MessageEvent){
+        if (!isAdminOrMaster(e)){
+            return
+        }
+        add(e)
+        del(e)
+        show(e)
+    }
+    private suspend fun add(event: MessageEvent) {
         val contentToString = event.message.contentToString()
-        if (contentToString.startsWith("加黑") && AdminAndMasterJudge.isMaster(event)) {
+        if (contentToString.startsWith("加黑")) {
+            //把加黑的qq分割出来“好友加黑123456-人品不行”
             val split = contentToString.split("黑")[1].split("-")
             blackList.add(BlackPojo(split[0].toLong(), split[1]))
-            event.subject.sendMessage("添加黑名单成功！")
+            event.subject.sendMessage("添加${split[0].toLong()}黑名单成功！")
         }
     }
 
-    suspend fun del(event: MessageEvent): Boolean {
-        if (blackList.size != 0) {
+    private suspend fun del(event: MessageEvent): Boolean {
+        val contentToString = event.message.contentToString()
+        if (!contentToString.startsWith("去黑")){
+            return false
+        }
+        if (blackList.size == 0) {
             event.subject.sendMessage("黑名单列表为空无法删除！")
             return false
         }
@@ -32,13 +45,16 @@ object BlackListEdit {
         return false
     }
 
-    suspend fun show(event: MessageEvent) {
+    private suspend fun show(event: MessageEvent) {
+        if (event.message.contentToString() != "黑名单列表"){
+            return
+        }
         if (blackList.size != 0) {
             var int = 0
-            val str = "名单列表\r"
+            var str = "名单列表\r"
             for (l in blackList) {
                 int++
-                str.plus("" + int + ":" + l.qq + "拉黑原因：" + l.text + "\r")
+                str += "" + int + ":" + l.qq + "，拉黑原因：" + l.text + "\r"
             }
             event.subject.sendMessage(str)
         } else {

@@ -10,6 +10,7 @@ import com.yulin.module.AdminConfigEdit.adminSettingQc
 import com.yulin.module.AdminConfigEdit.blackListSetting
 import com.yulin.module.AdminConfigEdit.blackListSettingQh
 import com.yulin.module.AdminConfigEdit.blackListShow
+import com.yulin.module.BlackListEdit.blackListMain
 import com.yulin.module.GroupCaoFriend.cao
 import com.yulin.module.GroupImageEdit.Companion.imageAdd
 import com.yulin.module.GroupImageEdit.Companion.sendImage
@@ -27,7 +28,7 @@ object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "com.yulin.AmusementPlugin",
         name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.0.9",
+        version = "1.1.0",
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
@@ -45,6 +46,8 @@ object AmusementPlugin : KotlinPlugin(
         BlackListConfig.reload()
         //监听群消息
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
+            //黑名单插件执行
+            blackListMain(this)
             //撤回被引用的消息
             recallMessage(this)
             //草群友插件执行
@@ -62,6 +65,8 @@ object AmusementPlugin : KotlinPlugin(
             }
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
+            //黑名单插件执行
+            blackListMain(this)
             //设置插件管理员执行
             adminSetting(this)
             adminSettingQc(this)
