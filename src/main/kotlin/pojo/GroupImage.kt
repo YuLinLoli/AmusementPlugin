@@ -1,4 +1,4 @@
-package com.mirai.pojo
+package com.yulin.pojo
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

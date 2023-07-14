@@ -9,8 +9,8 @@ plugins {
     id("net.mamoe.mirai-console") version "2.15.0-M1"
 }
 
-group = "com.mirai"
-version = "1.0.5"
+group = "com.yulin"
+version = "1.0.9"
 
 repositories {
 //    mavenLocal()

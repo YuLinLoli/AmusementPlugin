@@ -1,13 +1,12 @@
-package com.mirai.module
+package com.yulin.module
 
-import com.mirai.AmusementPlugin.save
-import com.mirai.config.AdminConfig
-import com.mirai.config.GroupImageConfig
-import com.mirai.kotlinUtil.AdminAndMasterJudge
-import com.mirai.kotlinUtil.ImageAddUtil
-import com.mirai.kotlinUtil.ImageUtil
-import com.mirai.kotlinUtil.ImageUtil.Companion.loadImage
-import com.mirai.pojo.GroupImage
+import com.yulin.AmusementPlugin.save
+import com.yulin.config.GroupImageConfig
+import com.yulin.kotlinUtil.AdminAndMasterJudge
+import com.yulin.kotlinUtil.ImageAddUtil
+import com.yulin.kotlinUtil.ImageUtil
+import com.yulin.kotlinUtil.ImageUtil.Companion.loadImage
+import com.yulin.pojo.GroupImage
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl

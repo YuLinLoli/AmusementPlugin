@@ -1,6 +1,6 @@
-package com.mirai.config
+package com.yulin.config
 
-import com.mirai.pojo.GroupSender
+import com.yulin.pojo.GroupSender
 import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.ValueName
 import net.mamoe.mirai.console.data.value

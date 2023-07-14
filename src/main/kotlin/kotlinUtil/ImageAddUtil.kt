@@ -1,8 +1,8 @@
-package com.mirai.kotlinUtil
+package com.yulin.kotlinUtil
 
-import com.mirai.AmusementPlugin.save
-import com.mirai.config.GroupImageConfig
-import com.mirai.pojo.GroupImage
+import com.yulin.AmusementPlugin.save
+import com.yulin.config.GroupImageConfig
+import com.yulin.pojo.GroupImage
 
 object ImageAddUtil {
     /**

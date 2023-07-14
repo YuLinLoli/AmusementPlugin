@@ -1,4 +1,4 @@
-package com.mirai.config
+package com.yulin.config
 
 import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.ValueName

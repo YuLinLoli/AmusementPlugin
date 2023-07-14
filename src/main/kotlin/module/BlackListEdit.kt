@@ -1,10 +1,8 @@
-package com.mirai.module
+package com.yulin.module
 
-import com.mirai.config.AdminConfig
-import com.mirai.config.BlackListConfig
-import com.mirai.config.BlackListConfig.blackList
-import com.mirai.kotlinUtil.AdminAndMasterJudge
-import com.mirai.pojo.BlackPojo
+import com.yulin.config.BlackListConfig.blackList
+import com.yulin.kotlinUtil.AdminAndMasterJudge
+import com.yulin.pojo.BlackPojo
 import net.mamoe.mirai.event.events.MessageEvent
 
 object BlackListEdit {

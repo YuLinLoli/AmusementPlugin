@@ -1,19 +1,19 @@
-package com.mirai
+package com.yulin
 
 
-import com.mirai.AmusementPlugin.save
-import com.mirai.config.AdminConfig
-import com.mirai.config.BlackListConfig
-import com.mirai.config.CdConfig
-import com.mirai.config.GroupImageConfig
-import com.mirai.module.AdminConfigEdit.adminSetting
-import com.mirai.module.AdminConfigEdit.adminSettingQc
-import com.mirai.module.AdminConfigEdit.blackListSetting
-import com.mirai.module.AdminConfigEdit.blackListSettingQh
-import com.mirai.module.AdminConfigEdit.blackListShow
-import com.mirai.module.GroupCaoFriend.cao
-import com.mirai.module.GroupImageEdit.Companion.imageAdd
-import com.mirai.module.GroupImageEdit.Companion.sendImage
+import com.yulin.config.AdminConfig
+import com.yulin.config.BlackListConfig
+import com.yulin.config.CdConfig
+import com.yulin.config.GroupImageConfig
+import com.yulin.module.AdminConfigEdit.adminSetting
+import com.yulin.module.AdminConfigEdit.adminSettingQc
+import com.yulin.module.AdminConfigEdit.blackListSetting
+import com.yulin.module.AdminConfigEdit.blackListSettingQh
+import com.yulin.module.AdminConfigEdit.blackListShow
+import com.yulin.module.GroupCaoFriend.cao
+import com.yulin.module.GroupImageEdit.Companion.imageAdd
+import com.yulin.module.GroupImageEdit.Companion.sendImage
+import com.yulin.module.MessageUtil.recallMessage
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -25,9 +25,9 @@ import net.mamoe.mirai.event.globalEventChannel
 
 object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
-        id = "com.mirai.AmusementPlugin",
+        id = "com.yulin.AmusementPlugin",
         name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.0.5",
+        version = "1.0.9",
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
@@ -45,6 +45,8 @@ object AmusementPlugin : KotlinPlugin(
         BlackListConfig.reload()
         //监听群消息
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
+            //撤回被引用的消息
+            recallMessage(this)
             //草群友插件执行
             cao(this)
             //设置插件管理员执行
@@ -58,7 +60,6 @@ object AmusementPlugin : KotlinPlugin(
             if (!b){
                 sendImage(this)
             }
-
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
             //设置插件管理员执行

@@ -1,6 +1,6 @@
-package com.mirai.kotlinUtil
+package com.yulin.kotlinUtil
 
-import com.mirai.config.AdminConfig
+import com.yulin.config.AdminConfig
 import net.mamoe.mirai.event.events.MessageEvent
 
 object AdminAndMasterJudge {

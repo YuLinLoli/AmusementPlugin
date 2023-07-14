@@ -1,16 +1,16 @@
-package com.mirai.module
+package com.yulin.module
 
 
-import com.mirai.AmusementPlugin.save
-import com.mirai.config.AdminConfig
-import com.mirai.config.BlackListConfig
-import com.mirai.config.BlackListConfig.blackList
-import com.mirai.config.CdConfig
-import com.mirai.kotlinUtil.AdminAndMasterJudge
-import com.mirai.kotlinUtil.BlackGroupJudge
-import com.mirai.kotlinUtil.ImageUtil
-import com.mirai.pojo.GroupSender
-import com.mirai.pojo.Sender
+import com.yulin.AmusementPlugin.save
+import com.yulin.config.AdminConfig
+import com.yulin.config.BlackListConfig.blackList
+import com.yulin.config.CdConfig
+import com.yulin.kotlinUtil.AdminAndMasterJudge
+import com.yulin.kotlinUtil.BlackGroupJudge
+import com.yulin.kotlinUtil.ImageUtil
+import com.yulin.kotlinUtil.MathUtil.Companion.probability
+import com.yulin.pojo.GroupSender
+import com.yulin.pojo.Sender
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -33,20 +33,15 @@ object GroupCaoFriend {
             if (!caoCdPd(event)) {
                 return false
             }
-            //主人id
-            val master = AdminConfig.master
             //判断是不是主人
             val tFMaster = AdminAndMasterJudge.isMaster(event)
             //判断是不是黑名单中的群
             val tFBlackGroupList = BlackGroupJudge.blackGroupPd(event)
             //创建消息
             val message = MessageChainBuilder()
-            //创建判断用的随机数
-            val randomPd = Random().nextInt(100)
-
             //不是黑名单的群就继续执行
             if (!tFBlackGroupList) {
-                var i = "0"
+//                var i = "0"
                 val list = event.group.members
                 val size = list.size
                 var member: NormalMember
@@ -67,6 +62,7 @@ object GroupCaoFriend {
                         }
                         //如果是黑名单qq触发的指令直接GG
                         if (n.qq == event.sender.id) {
+                            println("黑名单QQ！${event.sender.id}")
                             return false
                         }
                     }
@@ -82,33 +78,43 @@ object GroupCaoFriend {
                 //获取他的头像
                 val headImage = ImageUtil.getImage("https://q1.qlogo.cn/g?b=qq&s=0&nk=${member.id}", event)
                 message.add(At(event.sender.id))
-                if (!tFMe) {
-                    if (!tFMaster && randomPd < 1) {
-                        i = "孤独终老"
-                        message.add(" 万中无一，孤独终老。（百分之1的概率也能中快去抽卡买彩票.jpg）")
-                    } else if (!tFMaster && randomPd < 6) {
-                        i = "草歪了"
-                        message.add(" 呜呜呜，只因无力(╯‵□′)╯︵┻━┻，你直接日歪了，细狗")
-                    } else if (randomPd <= 75  && member.id != master) {
-                        i = "正常草到了"
-                        message.add(" 成功草到了" + member.nameCardOrNick + "(${member.id})")
-                        headImage?.let { it1 -> message.add(it1) }
-                    } else if (randomPd <= 95 && member.id != master) {
-                        i = "正常喜结良缘"
-                        message.add(" 恭喜你和" + member.nameCardOrNick + "(${member.id})" + "喜结良缘❤")
-                        headImage?.let { it1 -> message.add(it1) }
-                    } else if (event.sender.id != master) {
-                        i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
-                        message.add("就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!")
-                    } else {
-                        message.add("我最喜欢主人了！❤")
-                    }
-                } else if (!tFMaster) {
-                    message.add(" 恭喜你和自己喜结良缘❤（自交）")
-                } else {
-                    message.add(" 恭喜主人和枫喜结良缘❤")
+                if(!tFMaster && tFMe){
+                    message.add(" 恭喜你和自己喜结良缘❤（自交）(群人数分之1的概率)")
+                    event.group.sendMessage(message.build())
+                    return true
                 }
-
+                if (tFMe){
+                    message.add(" 我最喜欢主人啦！❤")
+                    event.group.sendMessage(message.build())
+                    return true
+                }
+                if (!tFMaster && probability(10)) {
+//                  i = "孤独终老"
+                    message.add(" 万中无一，孤独终老。（百分之1的概率也能中快去抽卡买彩票.jpg）")
+                    event.group.sendMessage(message.build())
+                    return true
+                }
+                if (!tFMaster && probability(30)) {
+//                  i = "草歪了"
+                    message.add(" 呜呜呜，只因无力(╯‵□′)╯︵┻━┻，你直接日歪了(3%概率)")
+                    event.group.sendMessage(message.build())
+                    return true
+                }
+                if (!tFMaster && probability(30)) {
+//                  i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
+                    message.add("就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!(3%概率)")
+                    event.group.sendMessage(message.build())
+                    return true
+                }
+                if (probability(200)) {
+//                  i = "正常喜结良缘"
+                    message.add(" 恭喜你成功和" + member.nameCardOrNick + "(${member.id})" + "结婚了❤！(20%概率)")
+                    headImage?.let { it1 -> message.add(it1) }
+                }else {
+//                  i = "正常草到了"
+                    message.add(" 成功草到了" + member.nameCardOrNick + "(${member.id})(73%概率)")
+                    headImage?.let { it1 -> message.add(it1) }
+                }
                 event.group.sendMessage(message.build())
 
             } else {

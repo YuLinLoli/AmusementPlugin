@@ -1,12 +1,11 @@
-package com.mirai.kotlinUtil
+package com.yulin.kotlinUtil
 
 
-import com.mirai.AmusementPlugin
+import com.yulin.AmusementPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage

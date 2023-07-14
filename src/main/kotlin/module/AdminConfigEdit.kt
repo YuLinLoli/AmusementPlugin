@@ -1,10 +1,8 @@
-package com.mirai.module
+package com.yulin.module
 
-import com.mirai.AmusementPlugin.save
-import com.mirai.config.AdminConfig
-import com.mirai.kotlinUtil.AdminAndMasterJudge
-import net.mamoe.mirai.event.events.FriendMessageEvent
-import net.mamoe.mirai.event.events.GroupMessageEvent
+import com.yulin.AmusementPlugin.save
+import com.yulin.config.AdminConfig
+import com.yulin.kotlinUtil.AdminAndMasterJudge
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.MessageChainBuilder
 

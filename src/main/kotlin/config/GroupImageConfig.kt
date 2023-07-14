@@ -1,6 +1,6 @@
-package com.mirai.config
+package com.yulin.config
 
-import com.mirai.pojo.GroupImage
+import com.yulin.pojo.GroupImage
 import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.ValueName
 import net.mamoe.mirai.console.data.value
