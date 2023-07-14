@@ -28,7 +28,7 @@ object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "com.yulin.AmusementPlugin",
         name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.1.0",
+        version = "1.1.1",
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
