@@ -57,6 +57,7 @@ object GroupCaoFriend {
                     }
                     //如果是黑名单的qq，则排除他
                     for (n in blackList) {
+                        //如果是黑名单qq则重新筛选幸运儿
                         if (n.qq == member.id) {
                             continue
                         }
