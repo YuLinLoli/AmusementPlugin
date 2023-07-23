@@ -4,8 +4,7 @@ package com.yulin.kotlinUtil
 import com.yulin.AmusementPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.mamoe.mirai.event.events.FriendMessageEvent
-import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
@@ -13,6 +12,7 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import okio.use
 import java.io.*
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.createDirectory
@@ -35,7 +35,7 @@ class ImageUtil {
         /**
          * 从本地加载Image
          */
-        suspend fun loadImage(event: GroupMessageEvent,imageName: String): Image?{
+        suspend fun loadImage(event: MessageEvent,imageName: String): Image?{
             try {
                 val s =
                     AmusementPlugin.dataFolderPath.pathString + File.separator + "image" + File.separator + imageName
@@ -54,9 +54,8 @@ class ImageUtil {
                     }
                     val toExternalResource =
                         out.toByteArray().toExternalResource()
-                    val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-                    withContext(Dispatchers.IO) {
-                        toExternalResource.close()
+                    val imageId: String = toExternalResource.use {
+                        it.uploadAsImage(event.subject).imageId
                     }
                     return Image(imageId)
                 }
@@ -84,18 +83,22 @@ class ImageUtil {
                 val response: Response = client.build().newCall(request).execute()
 
 
-                val `in` = response.body?.byteStream()
+                val responseImage = response.body?.byteStream()
 
 
                 val buffer = ByteArray(2048)
                 var len: Int
-                if (`in` != null) {
-                    while (withContext(Dispatchers.IO) {
-                            `in`.read(buffer)
-                        }.also { len = it } > 0) {
-                        infoStream.write(buffer, 0, len)
+                responseImage.use {
+                    if (it != null) {
+                        while (withContext(Dispatchers.IO) {
+                                it.read(buffer)
+                            }.also { it1 -> len = it1 } > 0) {
+                            infoStream.write(buffer, 0, len)
+                        }
                     }
                 }
+
+
 //                infoStream.write((Math.random() * 100).toInt() + 1)
 
 
@@ -104,8 +107,10 @@ class ImageUtil {
                     imagePath.createDirectory()
                 }
                 withContext(Dispatchers.IO) {
-                    FileOutputStream(imagePath.pathString + File.separator + imageName)
-                        .write(infoStream.toByteArray())
+                    infoStream.use {
+                        FileOutputStream(imagePath.pathString + File.separator + imageName)
+                            .write(it.toByteArray())
+                    }
                 }
 
                 return true
@@ -116,13 +121,13 @@ class ImageUtil {
         }
 
         /**
-         * （群）通过网址直接转换为可发送的Image
+         * 通过网址直接转换为可发送的Image
          * @param imageUri 图片网址
-         * @param event 群消息事件
+         * @param event 消息事件
          * @return Image? 可为空的图片
          * @author 岚雨凛<cheng_ying@outlook.com>
          */
-        suspend fun getImage(imageUri: String, event: GroupMessageEvent): Image? {
+        suspend fun getImage(imageUri: String, event: MessageEvent): Image? {
             val infoStream = ByteArrayOutputStream()
 
             try {
@@ -130,72 +135,33 @@ class ImageUtil {
                 val response: Response = client.build().newCall(request).execute()
 
 
-                val `in` = response.body?.byteStream()
+                val responseBody = response.body?.byteStream()
 
 
                 val buffer = ByteArray(2048)
                 var len: Int
-                if (`in` != null) {
-                    while (withContext(Dispatchers.IO) {
-                            `in`.read(buffer)
-                        }.also { len = it } > 0) {
-                        infoStream.write(buffer, 0, len)
+                responseBody.use {
+                    if (it != null) {
+                        while (withContext(Dispatchers.IO) {
+                                it.read(buffer)
+                            }.also { len = it } > 0) {
+                            infoStream.write(buffer, 0, len)
+                        }
                     }
                 }
-                infoStream.write((Math.random() * 100).toInt() + 1)
-                val toByteArray = infoStream.toByteArray()
+                val toByteArray = infoStream.use {
+                    it.write((Math.random() * 100).toInt() + 1)
+                    it.toByteArray()
+                }
+
                 val inputStream = ByteArrayInputStream(toByteArray)
-                val toExternalResource = inputStream.toExternalResource()
-                val uploadImage = event.sender.uploadImage(toExternalResource)
-
-                withContext(Dispatchers.IO) {
-                    toExternalResource.close()
-                    infoStream.close()
+                val toExternalResource = inputStream.use {
+                    it.toExternalResource()
                 }
 
-                return uploadImage
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return null
-            }
-        }
-
-        /**
-         * （私）通过网址直接转换为可发送的Image
-         * @param imageUri 图片网址
-         * @param event 私聊消息事件
-         * @return Image? 可为空的图片
-         * @author 岚雨凛<cheng_ying@outlook.com>
-         */
-        suspend fun getImage(imageUri: String, event: FriendMessageEvent): Image? {
-            val infoStream = ByteArrayOutputStream()
-
-            try {
-                val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
-                val response: Response = client.build().newCall(request).execute()
-
-
-                val `in` = response.body?.byteStream()
-
-
-                val buffer = ByteArray(2048)
-                var len: Int
-                if (`in` != null) {
-                    while (withContext(Dispatchers.IO) {
-                            `in`.read(buffer)
-                        }.also { len = it } > 0) {
-                        infoStream.write(buffer, 0, len)
-                    }
+                return toExternalResource.use {
+                    event.subject.uploadImage(it)
                 }
-                infoStream.write((Math.random() * 100).toInt() + 1)
-                val toByteArray = infoStream.toByteArray()
-                val inputStream = ByteArrayInputStream(toByteArray)
-                val uploadImage = event.sender.uploadImage(inputStream.toExternalResource())
-                withContext(Dispatchers.IO) {
-                    infoStream.close()
-                }
-
-                return uploadImage
             } catch (e: Exception) {
                 e.printStackTrace()
                 return null
