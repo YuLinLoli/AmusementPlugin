@@ -47,17 +47,20 @@ class ImageUtil {
                     val out = ByteArrayOutputStream()
                     val buffer = ByteArray(2048)
                     var len: Int
-                    while (withContext(Dispatchers.IO) {
-                            input.read(buffer)
-                        }.also { len = it } > 0) {
-                        out.write(buffer, 0, len)
+                    input.use {
+                        while (withContext(Dispatchers.IO) {
+                                it.read(buffer)
+                            }.also { len = it } > 0) {
+                            out.write(buffer, 0, len)
+                        }
                     }
-                    val toExternalResource =
-                        out.toByteArray().toExternalResource()
-                    val imageId: String = toExternalResource.use {
-                        it.uploadAsImage(event.subject).imageId
+
+                    val toExternalResource = out.use {
+                        it.toByteArray().toExternalResource()
                     }
-                    return Image(imageId)
+                    return toExternalResource.use {
+                        it.uploadAsImage(event.subject)
+                    }
                 }
                 println("error in loadImage!62")
                 return null
@@ -82,9 +85,9 @@ class ImageUtil {
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response = client.build().newCall(request).execute()
 
-
-                val responseImage = response.body?.byteStream()
-
+                val responseImage = response.use {
+                    it.body?.byteStream()
+                }
 
                 val buffer = ByteArray(2048)
                 var len: Int
@@ -135,7 +138,9 @@ class ImageUtil {
                 val response: Response = client.build().newCall(request).execute()
 
 
-                val responseBody = response.body?.byteStream()
+                val responseBody = response.use {
+                    it.body?.byteStream()
+                }
 
 
                 val buffer = ByteArray(2048)

@@ -19,9 +19,10 @@ class HttpRequestUtil {
                 .get()
                 .url(uri)
                 .build()
-
             val response = client.newCall(request).execute()
-            val responseData = response.body?.string()
+            val responseData = response.use {
+                it.body?.string()
+            }
             if (responseData != null) {
                 return responseData
             }
