@@ -51,10 +51,6 @@ object GroupCaoFriend {
                     val random = Random().nextInt(size - 1)
                     //获取这位幸运儿
                     member = list.elementAt(random)
-                    //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和枫喜结良缘❤”）
-                    if (tFMaster) {
-                        break
-                    }
                     //如果是黑名单的qq，则排除他
                     for (n in blackList) {
                         //如果是黑名单qq则重新筛选幸运儿
@@ -67,6 +63,11 @@ object GroupCaoFriend {
                             return false
                         }
                     }
+                    //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和枫喜结良缘❤”）
+                    if (tFMaster) {
+                        break
+                    }
+
                     //如果幸运儿的ID不是主人的ID的话就继续执行程序，否则继续循环新的幸运儿
                     if (member.id != AdminConfig.master) {
                         break
