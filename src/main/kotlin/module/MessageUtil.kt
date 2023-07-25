@@ -35,11 +35,14 @@ object MessageUtil {
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
     fun findAt(event: GroupMessageEvent): At?{
-        for (m in event.message) {
-            if (m is At){
-                return m
+        return event.message.find {
+            it is At
+        }.let {
+            if (it != null){
+                it as At
+            }else{
+                null
             }
         }
-        return null
     }
 }
