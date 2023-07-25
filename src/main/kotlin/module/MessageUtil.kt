@@ -2,10 +2,7 @@ package com.yulin.module
 
 import net.mamoe.mirai.contact.isOperator
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.QuoteReply
-import net.mamoe.mirai.message.data.findIsInstance
-import net.mamoe.mirai.message.data.recallSource
-import net.mamoe.mirai.message.data.source
+import net.mamoe.mirai.message.data.*
 
 object MessageUtil {
     //撤回被引用的消息
@@ -29,5 +26,20 @@ object MessageUtil {
             }
         }
         return false
+    }
+
+    /**
+     * 找到消息链中的第一个@
+     * @param event 群消息事件
+     * @return 空或者@对象
+     * @author 岚雨凛<cheng_ying@outlook.com>
+     */
+    fun findAt(event: GroupMessageEvent): At?{
+        for (m in event.message) {
+            if (m is At){
+                return m
+            }
+        }
+        return null
     }
 }
