@@ -13,7 +13,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okio.use
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.createDirectory
 import kotlin.io.path.exists
@@ -41,29 +44,14 @@ class ImageUtil {
                     AmusementPlugin.dataFolderPath.pathString + File.separator + "image" + File.separator + imageName
                 val file = File(s)
                 if (file.exists()){
-                    val input = withContext(Dispatchers.IO) {
-                        FileInputStream(file)
-                    }
-                    val out = ByteArrayOutputStream()
-                    val buffer = ByteArray(2048)
-                    var len: Int
-                    input.use {
-                        while (withContext(Dispatchers.IO) {
-                                it.read(buffer)
-                            }.also { len = it } > 0) {
-                            out.write(buffer, 0, len)
-                        }
-                    }
-
-                    val toExternalResource = out.use {
-                        it.toByteArray().toExternalResource()
-                    }
-                    return toExternalResource.use {
-                        it.uploadAsImage(event.subject)
-                    }
+                    println("error in loadImage!62")
+                    return null
                 }
-                println("error in loadImage!62")
-                return null
+                return withContext(Dispatchers.IO) {
+                    FileInputStream(file).toExternalResource()
+                }.use {
+                    it.uploadAsImage(event.subject)
+                }
             }catch (e: Exception){
                 println(e.message)
                 println("error in loadImage!65")
@@ -131,45 +119,17 @@ class ImageUtil {
          * @author 岚雨凛<cheng_ying@outlook.com>
          */
         suspend fun getImage(imageUri: String, event: MessageEvent): Image? {
-            val infoStream = ByteArrayOutputStream()
 
-            try {
+            return try {
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response = client.build().newCall(request).execute()
-
-
-                val responseBody = response.use {
-                    it.body?.byteStream()
+                response.use {
+                    it.body?.byteStream()?.toExternalResource()?.uploadAsImage(event.subject)
                 }
 
-
-                val buffer = ByteArray(2048)
-                var len: Int
-                responseBody.use {
-                    if (it != null) {
-                        while (withContext(Dispatchers.IO) {
-                                it.read(buffer)
-                            }.also { len = it } > 0) {
-                            infoStream.write(buffer, 0, len)
-                        }
-                    }
-                }
-                val toByteArray = infoStream.use {
-                    it.write((Math.random() * 100).toInt() + 1)
-                    it.toByteArray()
-                }
-
-                val inputStream = ByteArrayInputStream(toByteArray)
-                val toExternalResource = inputStream.use {
-                    it.toExternalResource()
-                }
-
-                return toExternalResource.use {
-                    event.subject.uploadImage(it)
-                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                return null
+                null
             }
         }
 
