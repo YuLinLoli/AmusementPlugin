@@ -14,8 +14,8 @@ import com.yulin.pojo.Sender
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageChainBuilder
+import net.mamoe.mirai.message.data.at
 import java.util.*
 
 /**
@@ -82,7 +82,7 @@ object GroupCaoFriend {
                 val tFMe = event.sender.id == member.id
                 //获取他的头像
                 val headImage = ImageUtil.getImage("https://q1.qlogo.cn/g?b=qq&s=0&nk=${member.id}", event)
-                message.add(At(event.sender.id))
+                message.add(event.sender.at())
                 if(!tFMaster && tFMe){
                     message.add(" 恭喜你和自己喜结良缘❤（自交）(群人数分之1的概率)")
                     event.group.sendMessage(message.build())
