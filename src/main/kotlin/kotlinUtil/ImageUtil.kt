@@ -48,9 +48,11 @@ class ImageUtil {
                     return null
                 }
                 return withContext(Dispatchers.IO) {
-                    FileInputStream(file).toExternalResource()
-                }.use {
-                    it.uploadAsImage(event.subject)
+                    FileInputStream(file).use {  file->
+                        file.toExternalResource().use {  externalResource->
+                            externalResource.uploadAsImage(event.subject)
+                        }
+                    }
                 }
             }catch (e: Exception){
                 println(e.message)
@@ -99,8 +101,9 @@ class ImageUtil {
                 }
                 withContext(Dispatchers.IO) {
                     infoStream.use {
-                        FileOutputStream(imagePath.pathString + File.separator + imageName)
-                            .write(it.toByteArray())
+                        FileOutputStream(imagePath.pathString + File.separator + imageName).use {  it1->
+                            it1.write(it.toByteArray())
+                        }
                     }
                 }
 
@@ -123,14 +126,28 @@ class ImageUtil {
             return try {
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response = client.build().newCall(request).execute()
-                response.use {
-                    it.body?.byteStream()?.toExternalResource()?.uploadAsImage(event.subject)
-                }
+                uploadAsImage(response, event)
 
             } catch (e: Exception) {
                 e.printStackTrace()
                 null
             }
+        }
+
+        private suspend fun uploadAsImage(response: Response, event: MessageEvent): Image?{
+            return try {
+                response.use {  response1->
+                    response1.body?.byteStream()?.use {  byteStream->
+                        byteStream.toExternalResource().use {  toExternalResource->
+                            toExternalResource.uploadAsImage(event.subject)
+                        }
+                    }
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
+                null
+            }
+
         }
 
 
