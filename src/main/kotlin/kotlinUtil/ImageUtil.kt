@@ -127,7 +127,7 @@ class ImageUtil {
 
             try {
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
-                val response: Response = client.build().newCall(request).execute();
+                val response: Response = client.build().newCall(request).execute()
 
 
                 val `in` = response.body?.byteStream()
@@ -172,7 +172,7 @@ class ImageUtil {
 
             try {
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
-                val response: Response = client.build().newCall(request).execute();
+                val response: Response = client.build().newCall(request).execute()
 
 
                 val `in` = response.body?.byteStream()

@@ -12,5 +12,8 @@ object AdminConfig: AutoSavePluginConfig("AdminConfig") {
     @ValueName("blackGroups")
     var blackGroupList: MutableList<Long> by value()
 
+    @ValueName("botName")
+    var botName: String by value()
+
 
 }

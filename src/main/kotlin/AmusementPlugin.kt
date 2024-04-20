@@ -1,6 +1,7 @@
 package com.yulin
 
 
+import com.yulin.cg.BuildConfig
 import com.yulin.config.AdminConfig
 import com.yulin.config.BlackListConfig
 import com.yulin.config.CdConfig
@@ -10,6 +11,8 @@ import com.yulin.module.AdminConfigEdit.adminSettingQc
 import com.yulin.module.AdminConfigEdit.blackListSetting
 import com.yulin.module.AdminConfigEdit.blackListSettingQh
 import com.yulin.module.AdminConfigEdit.blackListShow
+import com.yulin.module.AdminConfigEdit.botNameLook
+import com.yulin.module.AdminConfigEdit.botNameSetting
 import com.yulin.module.BlackListEdit.blackListMain
 import com.yulin.module.GroupCaoFriend.cao
 import com.yulin.module.GroupImageEdit.Companion.imageAdd
@@ -26,9 +29,9 @@ import net.mamoe.mirai.event.globalEventChannel
 
 object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
-        id = "com.yulin.AmusementPlugin",
-        name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.1.1",
+        id = BuildConfig.id,
+        name = BuildConfig.name,
+        version = BuildConfig.yulinVersion
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
@@ -58,13 +61,17 @@ object AmusementPlugin : KotlinPlugin(
             //设置群黑名单执行
             blackListSetting(this)
             blackListSettingQh(this)
+            botNameSetting(this)
+            botNameLook(this)
             //添加表情图片执行
             val b = imageAdd(this)
             if (!b){
                 sendImage(this)
             }
+
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
+            botNameSetting(this)
             //黑名单插件执行
             blackListMain(this)
             //设置插件管理员执行
@@ -74,6 +81,7 @@ object AmusementPlugin : KotlinPlugin(
             blackListSetting(this)
             blackListSettingQh(this)
             blackListShow(this)
+            botNameLook(this)
         }
         globalEventChannel().subscribeAlways<GroupEvent> {
 
