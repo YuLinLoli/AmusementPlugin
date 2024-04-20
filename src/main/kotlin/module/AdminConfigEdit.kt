@@ -3,10 +3,56 @@ package com.yulin.module
 import com.yulin.AmusementPlugin.save
 import com.yulin.config.AdminConfig
 import com.yulin.kotlinUtil.AdminAndMasterJudge
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.MessageChainBuilder
 
 object AdminConfigEdit {
+    /**
+     * 设定机器人名称，只能master来设定
+     * @param event 可以是群或者私聊的事件
+     * @author 岚雨凛<cheng_ying@outlook.com>
+     */
+    suspend fun botNameSetting(event: MessageEvent) {
+        if (!AdminAndMasterJudge.isMaster(event)) {
+            return
+        }
+        if (event.message.contentToString().startsWith("机器人名称=")) {
+            try {
+                AdminConfig.botName = event.message.contentToString().split("=")[1]
+                AdminConfig.save()
+                event.subject.sendMessage("设置机器人名称为“${AdminConfig.botName}”成功！")
+            } catch (e: Exception) {
+                var name = AdminConfig.botName
+                if (name == "") {
+                    name = event.bot.nameCardOrNick
+                }
+                event.subject.sendMessage("设置机器人名称失败，机器人名称为${name}")
+            }
+
+        }
+    }
+
+    /**
+     * 查看机器人当前名称，只能master
+     * @param event 可以是群或者私聊的事件
+     * @author 岚雨凛<cheng_ying@outlook.com>
+     */
+    suspend fun botNameLook(event: MessageEvent) {
+        if (!AdminAndMasterJudge.isMaster(event)) {
+            return
+        }
+        if (event.message.contentToString().startsWith("机器人名称")) {
+            var name = AdminConfig.botName
+            if (name == "") {
+                name = event.bot.nameCardOrNick
+                AdminConfig.botName = name
+                AdminConfig.save()
+            }
+            event.subject.sendMessage("机器人目前名称为“${name}”")
+        }
+    }
+
     /**
      * 设定插件管理员，只能master来设定
      * @param event 可以是群或者私聊的事件

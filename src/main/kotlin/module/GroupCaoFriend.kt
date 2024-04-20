@@ -33,6 +33,10 @@ object GroupCaoFriend {
             if (!caoCdPd(event)) {
                 return false
             }
+            var botName = AdminConfig.botName
+            if (botName == "") {
+                botName = event.bot.nameCardOrNick
+            }
             //判断是不是主人
             val tFMaster = AdminAndMasterJudge.isMaster(event)
             //判断是不是黑名单中的群
@@ -51,7 +55,7 @@ object GroupCaoFriend {
                     val random = Random().nextInt(size - 1)
                     //获取这位幸运儿
                     member = list.elementAt(random)
-                    //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和枫喜结良缘❤”）
+                    //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和botName喜结良缘❤”）
                     if (tFMaster) {
                         break
                     }
@@ -85,7 +89,7 @@ object GroupCaoFriend {
                     return true
                 }
                 if (tFMe){
-                    message.add(" 我最喜欢主人啦！❤")
+                    message.add(" ${botName}最喜欢主人啦！❤")
                     event.group.sendMessage(message.build())
                     return true
                 }
@@ -103,7 +107,7 @@ object GroupCaoFriend {
                 }
                 if (!tFMaster && probability(30)) {
 //                  i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
-                    message.add("就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!(3%概率)")
+                    message.add(" 就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!(3%概率)")
                     event.group.sendMessage(message.build())
                     return true
                 }
