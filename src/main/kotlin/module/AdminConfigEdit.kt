@@ -84,25 +84,34 @@ object AdminConfigEdit {
      * @param event 可以是群或者私聊的事件
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
-    suspend fun blackListSetting(event: MessageEvent): Boolean {
-        if (event.message.contentToString().contains("群加黑")) {
+    suspend fun blackListSetting(event: MessageEvent) {
+        if (event.message.contentToString().contains("指令-off") || event.message.contentToString()
+                .contains("指令-coff")
+        ) {
 
 
             if (AdminAndMasterJudge.isAdminOrMaster(event)) {
-                var s = event.message.contentToString().split("黑")[1]
+                var s = event.message.contentToString().split("off")[1]
                 if (s != "") {
-                    AdminConfig.blackGroupList.add(s.toLong())
+                    AdminConfig.blackGroupList.add(s.replace("-", "").toLong())
                     AdminConfig.save()
-                    event.subject.sendMessage("已经成功设定群黑名单：${s}")
+                    if (event.message.contentToString().contains("coff")) {
+                        event.subject.sendMessage("关闭${s}群功能：草群友")
+                        return
+                    }
+                    event.subject.sendMessage("关闭${s}群功能：pixiv，草群友")
                 } else {
                     s = event.subject.id.toString()
                     AdminConfig.blackGroupList.add(s.toLong())
                     AdminConfig.save()
-                    event.subject.sendMessage("已经成功设定群黑名单：${s}")
+                    if (event.message.contentToString().contains("coff")) {
+                        event.subject.sendMessage("关闭本群群功能：草群友")
+                        return
+                    }
+                    event.subject.sendMessage("关闭本群群功能：pixiv，草群友")
                 }
             }
         }
-        return false
     }
 
     /**
@@ -111,22 +120,30 @@ object AdminConfigEdit {
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
     suspend fun blackListSettingQh(event: MessageEvent) {
-        if (event.message.contentToString().contains("群去黑")) {
+        if (event.message.contentToString().contains("指令-on") || event.message.contentToString()
+                .contains("指令-con")
+        ) {
 
             if (AdminAndMasterJudge.isAdminOrMaster(event)) {
-                val removeGroup = event.message.contentToString().split("黑")[1]
+                val removeGroup = event.message.contentToString().split("on")[1]
                 val groupId: Long
                 if (removeGroup != "") {
-                    groupId = removeGroup.toLong()
+                    groupId = removeGroup.replace("-", "").toLong()
                     AdminConfig.blackGroupList.remove(groupId)
                     AdminConfig.save()
-                    event.subject
-                        .sendMessage("已经成功删除群黑名单：${groupId}")
+                    if (event.message.contentToString().contains("con")) {
+                        event.subject.sendMessage("开启${groupId}群功能：草群友")
+                        return
+                    }
+                    event.subject.sendMessage("开启${groupId}群功能：pixiv，草群友")
                 } else {
                     groupId = event.subject.id
                     AdminConfig.blackGroupList.remove(groupId)
-                    event.subject
-                        .sendMessage("已成功删除群黑名单：${groupId}")
+                    if (event.message.contentToString().contains("con")) {
+                        event.subject.sendMessage("开启本群群功能：草群友")
+                        return
+                    }
+                    event.subject.sendMessage("开启本群群功能：pixiv，草群友")
                 }
 
             }
@@ -142,9 +159,9 @@ object AdminConfigEdit {
      */
     suspend fun blackListShow(event: MessageEvent) {
 
-        if (AdminAndMasterJudge.isAdminOrMaster(event) && event.message.contentToString().contains("黑名单群")) {
+        if (AdminAndMasterJudge.isAdminOrMaster(event) && event.message.contentToString().contains("关闭的群")) {
             val mess = MessageChainBuilder()
-            mess.add("黑名单群列表：\n")
+            mess.add("关闭功能的群列表：\n")
             for (l in AdminConfig.blackGroupList) {
                 val name = event.bot.getGroup(l)?.name
                 mess.add(name + "(${l})\n")

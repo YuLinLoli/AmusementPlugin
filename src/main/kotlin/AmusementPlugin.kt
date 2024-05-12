@@ -17,16 +17,13 @@ import com.yulin.module.BlackListEdit.blackListMain
 import com.yulin.module.GroupCaoFriend.cao
 import com.yulin.module.GroupImageEdit.Companion.imageAdd
 import com.yulin.module.GroupImageEdit.Companion.sendImage
-import com.yulin.module.MessageErrorJudge.messageJudge
 import com.yulin.module.MessageUtil.recallMessage
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.event.events.MessagePostSendEvent
 import net.mamoe.mirai.event.globalEventChannel
 
 
@@ -72,9 +69,6 @@ object AmusementPlugin : KotlinPlugin(
                 sendImage(this)
             }
 
-        }
-        globalEventChannel().subscribeAlways<MessagePostSendEvent<Group>> {
-            messageJudge(this)
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
             botNameSetting(this)

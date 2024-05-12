@@ -37,10 +37,6 @@ object GroupCaoFriend {
             if (botName == "") {
                 botName = event.bot.nameCardOrNick
             }
-            var botName = AdminConfig.botName
-            if (botName == "") {
-                botName = event.bot.nameCardOrNick
-            }
             //判断是不是主人
             val tFMaster = AdminAndMasterJudge.isMaster(event)
             //判断是不是黑名单中的群
