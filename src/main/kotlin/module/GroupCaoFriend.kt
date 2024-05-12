@@ -27,11 +27,11 @@ object GroupCaoFriend {
      * @param event 群消息事件
      *
      */
-    suspend fun cao(event: GroupMessageEvent): Boolean {
+    suspend fun cao(event: GroupMessageEvent) {
         if (event.message.contentToString() == "草群友") {
             //判断是否在CD中！
             if (!caoCdPd(event)) {
-                return false
+                return
             }
             var botName = AdminConfig.botName
             if (botName == "") {
@@ -68,7 +68,7 @@ object GroupCaoFriend {
                         //如果是黑名单qq触发的指令直接GG
                         if (n.qq == event.sender.id) {
                             println("黑名单QQ！${event.sender.id}")
-                            return false
+                            return
                         }
                     }
                     //如果幸运儿的ID不是主人的ID的话就继续执行程序，否则继续循环新的幸运儿
@@ -86,30 +86,30 @@ object GroupCaoFriend {
                 if(!tFMaster && tFMe){
                     message.add(" 恭喜你和自己喜结良缘❤（自交）(群人数分之1的概率)")
                     event.group.sendMessage(message.build())
-                    return true
+                    return
                 }
                 if (tFMe){
                     message.add(" ${botName}最喜欢主人啦！❤")
                     event.group.sendMessage(message.build())
-                    return true
+                    return
                 }
                 if (!tFMaster && probability(10)) {
 //                  i = "孤独终老"
                     message.add(" 万中无一，孤独终老。（百分之1的概率也能中快去抽卡买彩票.jpg）")
                     event.group.sendMessage(message.build())
-                    return true
+                    return
                 }
                 if (!tFMaster && probability(30)) {
 //                  i = "草歪了"
                     message.add(" 呜呜呜，只因无力(╯‵□′)╯︵┻━┻，你直接日歪了(3%概率)")
                     event.group.sendMessage(message.build())
-                    return true
+                    return
                 }
                 if (!tFMaster && probability(30)) {
 //                  i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
                     message.add(" 就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!(3%概率)")
                     event.group.sendMessage(message.build())
-                    return true
+                    return
                 }
                 if (probability(200)) {
 //                  i = "正常喜结良缘"
@@ -126,7 +126,6 @@ object GroupCaoFriend {
                 println("排除群，不执行草群友指令！")
             }
         }
-        return true
     }
 
     private suspend fun caoCdPd(event: GroupMessageEvent): Boolean {
