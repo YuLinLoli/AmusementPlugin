@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.yulin"
-version = "1.0.2"
+version = "1.0.3"
 buildConfig {
     className("BuildConfig")
     packageName("com.yulin.cg")
@@ -20,7 +20,6 @@ buildConfig {
     buildConfigField("String", "id", "\"com.yulin.AmusementPlugin\"")
 }
 mirai {
-    jvmTarget = JavaVersion.VERSION_11
     noTestCore = true
     setupConsoleTestRuntime {
         // 移除 mirai-core 依赖
