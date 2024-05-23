@@ -11,7 +11,6 @@ object AdminConfig: AutoSavePluginConfig("AdminConfig") {
     var adminList: MutableList<Long> by value()
     @ValueName("blackGroups")
     var blackGroupList: MutableList<Long> by value()
-
     @ValueName("cdTime")
     var cdTime: Int by value(3600)
 
