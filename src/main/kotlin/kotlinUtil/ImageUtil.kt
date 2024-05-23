@@ -1,4 +1,4 @@
-package com.mirai.kotlinUtil
+package com.yulin.kotlinUtil
 
 
 import kotlinx.coroutines.Dispatchers

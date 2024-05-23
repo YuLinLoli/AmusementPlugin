@@ -1,13 +1,15 @@
-package com.mirai
+package com.yulin
 
 
-import com.mirai.config.AdminConfig
-import com.mirai.module.AdminConfigEdit.adminSetting
-import com.mirai.module.AdminConfigEdit.adminSettingQc
-import com.mirai.module.AdminConfigEdit.blackListSetting
-import com.mirai.module.AdminConfigEdit.blackListSettingQh
-import com.mirai.module.AdminConfigEdit.blackListShow
-import com.mirai.module.GroupCaoFriend.cao
+import com.yulin.cg.BuildConfig
+import com.yulin.config.AdminConfig
+import com.yulin.module.AdminConfigEdit.adminSetting
+import com.yulin.module.AdminConfigEdit.adminSettingQc
+import com.yulin.module.AdminConfigEdit.blackListSetting
+import com.yulin.module.AdminConfigEdit.blackListSettingQh
+import com.yulin.module.AdminConfigEdit.blackListShow
+import com.yulin.module.AdminConfigEdit.cdEdit
+import com.yulin.module.GroupCaoFriend.cao
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -19,9 +21,9 @@ import net.mamoe.mirai.event.globalEventChannel
 
 object AmusementPlugin : KotlinPlugin(
     JvmPluginDescription(
-        id = "com.mirai.AmusementPlugin",
-        name = "娱乐插件（有很多小的娱乐功能哦）",
-        version = "1.0.1",
+        id = BuildConfig.id,
+        name = BuildConfig.name,
+        version = BuildConfig.yulinVersion
     )
 ) {
     override fun PluginComponentStorage.onLoad() {
@@ -42,7 +44,7 @@ object AmusementPlugin : KotlinPlugin(
             //设置群黑名单执行
             blackListSetting(this)
             blackListSettingQh(this)
-
+            cdEdit(this)
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
             //设置插件管理员执行
@@ -52,6 +54,7 @@ object AmusementPlugin : KotlinPlugin(
             blackListSetting(this)
             blackListSettingQh(this)
             blackListShow(this)
+            cdEdit(this)
         }
 
 

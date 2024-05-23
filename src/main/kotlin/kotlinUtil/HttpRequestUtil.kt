@@ -1,4 +1,4 @@
-package com.mirai.kotlinUtil
+package com.yulin.kotlinUtil
 
 import okhttp3.OkHttpClient
 import okhttp3.Request

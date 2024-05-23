@@ -1,9 +1,14 @@
-package com.mirai.module
+package com.yulin.module
 
 
-import com.mirai.config.AdminConfig
-import com.mirai.kotlinUtil.BlackGroupJudge
-import com.mirai.kotlinUtil.ImageUtil
+import com.yulin.AmusementPlugin.logger
+import com.yulin.AmusementPlugin.save
+import com.yulin.config.AdminConfig
+import com.yulin.config.CdConfig
+import com.yulin.kotlinUtil.BlackGroupJudge
+import com.yulin.kotlinUtil.ImageUtil
+import com.yulin.pojo.GroupSender
+import com.yulin.pojo.Sender
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -21,6 +26,10 @@ object GroupCaoFriend {
      */
     suspend fun cao(event: GroupMessageEvent) {
         if (event.message.contentToString() == "草群友") {
+            //判断是否在CD中！
+            if (!caoCdPd(event)) {
+                return
+            }
             //主人id
             val master = AdminConfig.master
             //判断是不是主人
@@ -60,9 +69,6 @@ object GroupCaoFriend {
                         i = "正常喜结良缘"
                         message.add(" 恭喜你和" + member.nameCardOrNick + "(${member.id})" + "喜结良缘❤")
                         headImage?.let { it1 -> message.add(it1) }
-                    } else if (member.id == master && event.sender.id != master) {
-                        i = "草master失败"
-                        message.add(" 就凭你也想草我主人？")
                     } else {
                         i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
                         message.add("就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!")
@@ -70,7 +76,7 @@ object GroupCaoFriend {
                 } else if (!tFMaster) {
                     message.add(" 恭喜你和自己喜结良缘❤（自交）")
                 } else {
-                    message.add(" 恭喜主人和枫喜结良缘❤")
+                    message.add(" 恭喜主人和${event.bot.nameCardOrNick}喜结良缘❤")
                 }
                 val test = MessageChainBuilder()
                 test.add(At(event.sender.id))
@@ -86,8 +92,83 @@ object GroupCaoFriend {
                 event.group.sendMessage(message.build())
 
             }else{
-                println("排除群，不执行草群友指令！")
+                logger.info("排除群，不执行草群友指令！")
             }
         }
+    }
+
+    private suspend fun caoCdPd(event: GroupMessageEvent): Boolean {
+        val timeMillis = System.currentTimeMillis()
+        //群id
+        val gid = event.group.id
+        //qq
+        val qid = event.sender.id
+        //判断配置文件内是否有该群
+        var gTF = false
+        //判断是否有该群成员
+        var qTf = false
+        //最后的返回值！
+        var CD = false
+        //如果有CD就设值！
+        var cdTime = 0L
+        //判断是否为主人发的
+        if (event.sender.id != AdminConfig.master) {
+            return true
+        }
+        //第一次创建文件！
+        if (CdConfig.groupSender.isEmpty()) {
+            val list: MutableList<Sender> = listOf<Sender>().toMutableList()
+            list.add(Sender(qid, timeMillis))
+            CdConfig.groupSender.add(GroupSender(gid, list))
+            CdConfig.save()
+            return true
+        }
+        //判断是否在CD中
+        for (g in CdConfig.groupSender) {
+            if (g.gid == gid) {
+                gTF = true
+                for (q in g.sender) {
+                    //如果能找到此群成员对象就赋予CD！并让流程继续执行
+                    if (qid == q.qid) {
+                        //如果进去了就设置新的CD
+                        if (timeMillis - q.cd > AdminConfig.cdTime * 1000) {
+                            q.cd = timeMillis
+                            CdConfig.save()
+                            CD = true
+
+                        }
+                        cdTime = q.cd
+                        qTf = true
+                    }
+                }
+            }
+
+        }
+        //判断是否有该群，没有就创建群把成员CD加入
+        if (!gTF) {
+            val list: MutableList<Sender> = listOf<Sender>().toMutableList()
+            list.add(Sender(qid, timeMillis))
+            CdConfig.groupSender.add(GroupSender(gid, list))
+            CdConfig.save()
+            return true
+        }
+        //判断是否有该群友，没有就加入
+        if (!qTf) {
+            for (g in CdConfig.groupSender) {
+                if (g.gid == gid) {
+                    g.sender.add(Sender(qid, timeMillis))
+                    CdConfig.save()
+                    return true
+                }
+            }
+        }
+        //如果在CD就回复在CD
+        if (!CD) {
+            val times = (3600000 - (timeMillis - cdTime)) / 1000
+            println("CD还有${times}")
+            event.group.sendMessage("请等待${times}秒后再使用“草群友”指令！！")
+            return false
+        }
+        return true
     }
 }
