@@ -10,6 +10,7 @@ import com.yulin.module.AdminConfigEdit.blackListSettingQh
 import com.yulin.module.AdminConfigEdit.blackListShow
 import com.yulin.module.AdminConfigEdit.cdEdit
 import com.yulin.module.GroupCaoFriend.cao
+import com.yulin.module.Help.help
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -45,6 +46,7 @@ object AmusementPlugin : KotlinPlugin(
             blackListSetting(this)
             blackListSettingQh(this)
             cdEdit(this)
+            help(this)
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent> {
             //设置插件管理员执行
@@ -55,6 +57,7 @@ object AmusementPlugin : KotlinPlugin(
             blackListSettingQh(this)
             blackListShow(this)
             cdEdit(this)
+            help(this)
         }
 
 

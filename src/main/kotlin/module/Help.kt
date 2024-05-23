@@ -1,9 +1,13 @@
 package com.yulin.module
 
+import com.yulin.config.AdminConfig
 import net.mamoe.mirai.event.events.MessageEvent
 
 object Help {
     suspend fun help(event: MessageEvent) {
+        if (AdminConfig.master != event.sender.id || !AdminConfig.adminList.contains(event.sender.id)) {
+            return
+        }
         if (event.message.contentToString().startsWith("管理员帮助")) {
             event.subject.sendMessage(
                 "AmusementPlugin help\n" +

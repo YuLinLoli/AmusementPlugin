@@ -35,7 +35,7 @@ object AdminConfigEdit {
     /**
      * 设置cd
      */
-    suspend fun cdEdit(event: MessageEvent) {
+    fun cdEdit(event: MessageEvent) {
         if (!event.message.contentToString().startsWith("指令-cd")) {
             return
         }
