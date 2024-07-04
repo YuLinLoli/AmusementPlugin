@@ -7,13 +7,45 @@ import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.MessageChainBuilder
 
 object AdminConfigEdit {
+    private fun adminOrMaster(event: MessageEvent): Boolean {
+        if (event.sender.id == AdminConfig.master) {
+            return false
+        }
+        if (AdminConfig.adminList.contains(event.sender.id)) {
+            return false
+        }
+        return true
+    }
+
+    fun isMaster(event: MessageEvent): Boolean {
+        return event.sender.id == AdminConfig.master
+    }
+
+    /**
+     * 列出关闭群列表
+     * @param event FriendMessageEvent好友消息事件
+     * @author 岚雨凛<cheng_ying@outlook.com>
+     */
+    suspend fun blackListShow(event: FriendMessageEvent) {
+
+        if (isMaster(event) && event.message.contentToString() == "指令-关闭的群") {
+            val mess = MessageChainBuilder()
+            mess.add("关闭群列表：\n")
+            for (l in AdminConfig.blackGroupList) {
+                val name = event.bot.getGroup(l)?.name
+                mess.add(name + "(${l})\n")
+            }
+            event.sender.sendMessage(mess.build())
+        }
+        return
+    }
     /**
      * 设定插件管理员，只能master来设定
      * @param event 可以是群或者私聊的事件
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
     suspend fun adminSetting(event: MessageEvent){
-        if (AdminConfig.master == event.sender.id && event.message.contentToString().startsWith("指令-设置管理员")) {
+        if (isMaster(event) && event.message.contentToString().startsWith("指令-设置管理员")) {
             AdminConfig.adminList.add(event.message.contentToString().split("员")[1].toLong())
             AdminConfig.save()
             event.sender.sendMessage("已经成功设定管理员：${event.message.contentToString().split("员")[1]}")
@@ -25,7 +57,7 @@ object AdminConfigEdit {
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
     suspend fun adminSettingQc(event: MessageEvent){
-        if (AdminConfig.master == event.sender.id && event.message.contentToString().startsWith("指令-取消管理员")) {
+        if (isMaster(event) && event.message.contentToString().startsWith("指令-取消管理员")) {
             AdminConfig.adminList.remove(event.message.contentToString().split("员")[1].toLong())
             AdminConfig.save()
             event.sender.sendMessage("已经成功取消管理员：${event.message.contentToString().split("员")[1]}")
@@ -49,8 +81,10 @@ object AdminConfigEdit {
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
     suspend fun blackListSetting(event: MessageEvent) {
-        if (event.message.contentToString().startsWith("指令-关闭")) {
-            if (AdminConfig.master != event.sender.id || !AdminConfig.adminList.contains(event.sender.id)) {
+        if (event.message.contentToString().startsWith("指令-关闭") && !event.message.contentToString()
+                .contains("的群")
+        ) {
+            if (adminOrMaster(event)) {
                 return
             }
 
@@ -76,7 +110,7 @@ object AdminConfigEdit {
      */
     suspend fun blackListSettingQh(event: MessageEvent) {
         if (event.message.contentToString().startsWith("指令-开启")) {
-            if (AdminConfig.master != event.sender.id || !AdminConfig.adminList.contains(event.sender.id)) {
+            if (adminOrMaster(event)) {
                 return
             }
 
@@ -102,21 +136,5 @@ object AdminConfigEdit {
 
 
 
-    /**
-     * 列出关闭群列表
-     * @param event FriendMessageEvent好友消息事件
-     * @author 岚雨凛<cheng_ying@outlook.com>
-     */
-    suspend fun blackListShow(event: FriendMessageEvent) {
 
-        if (AdminConfig.master == event.sender.id && event.message.contentToString().startsWith("指令-关闭的群")) {
-            val mess = MessageChainBuilder()
-            mess.add("关闭群列表：\n")
-            for (l in AdminConfig.blackGroupList) {
-                val name = event.bot.getGroup(l)?.name
-                mess.add(name + "(${l})\n")
-            }
-            event.sender.sendMessage(mess.build())
-        }
-    }
 }

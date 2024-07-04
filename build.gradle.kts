@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.yulin"
-version = "1.0.5"
+version = "1.0.6"
 buildConfig {
     className("BuildConfig")
     packageName("com.yulin.cg")
@@ -30,8 +30,9 @@ mirai {
 }
 repositories {
     mavenLocal()
-//    maven("https://maven.aliyun.com/repository/gradle-plugin")
-//    maven("https://maven.aliyun.com/repository/central")
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
+    maven("https://maven.aliyun.com/repository/public")
+    maven("https://maven.aliyun.com/repository/central")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
     mavenCentral()
 }
