@@ -10,13 +10,7 @@ object BlackGroupJudge {
      * @return ture or false
      */
     fun blackGroupPd(event:GroupMessageEvent): Boolean{
-        var tFBlackGroupList = false
-        for (l in AdminConfig.blackGroupList) {
-            if (event.group.id == l){
-                tFBlackGroupList = true
-            }
-        }
-        return tFBlackGroupList
+        return AdminConfig.blackGroupList.contains(event.group.id)
     }
 
 }

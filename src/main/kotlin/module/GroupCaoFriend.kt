@@ -1,6 +1,7 @@
 package com.yulin.module
 
 
+import com.yulin.AmusementPlugin.logger
 import com.yulin.AmusementPlugin.save
 import com.yulin.config.AdminConfig
 import com.yulin.config.BlackListConfig.blackList
@@ -29,6 +30,11 @@ object GroupCaoFriend {
      */
     suspend fun cao(event: GroupMessageEvent) {
         if (event.message.contentToString() == "草群友") {
+            //判断是不是黑名单中的群
+            if (BlackGroupJudge.blackGroupPd(event)) {
+                logger.info("排除群，不执行草群友")
+                return
+            }
             //判断是否在CD中！
             if (!caoCdPd(event)) {
                 return
@@ -39,14 +45,11 @@ object GroupCaoFriend {
             }
             //判断是不是主人
             val tFMaster = AdminAndMasterJudge.isMaster(event)
-            //判断是不是黑名单中的群
-            val tFBlackGroupList = BlackGroupJudge.blackGroupPd(event)
+
             //创建消息
             val message = MessageChainBuilder()
-            //不是黑名单的群就继续执行
-            if (!tFBlackGroupList) {
-//                var i = "0"
-                val list = event.group.members
+
+            val list = event.group.members
                 val size = list.size
                 var member: NormalMember
                 //排除主人
@@ -122,9 +125,7 @@ object GroupCaoFriend {
                 }
                 event.group.sendMessage(message.build())
 
-            } else {
-                println("排除群，不执行草群友指令！")
-            }
+
         }
     }
 
