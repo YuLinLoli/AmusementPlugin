@@ -49,9 +49,6 @@ jobs:
         #取文件名
       - name: Get Plugin Name
         run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
-      - name: Get Plugin Name And Suffix
-        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \; | sed 's/\.mirai2.jar/-mirai/)" >> $GITHUB_ENV
-
       - name: Remove File Suffix
         run: |
           FILE_NAME="${{ env.NAME }}"
