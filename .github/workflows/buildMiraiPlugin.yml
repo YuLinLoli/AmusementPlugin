@@ -14,7 +14,7 @@ on:
     tags:
       - "v*"
 jobs:
-  release:
+  Release:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -50,7 +50,7 @@ jobs:
           prerelease: ${{ contains(github.ref, 'pre') }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
-  autobuild:
+  AutoBuild:
     if: !startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
