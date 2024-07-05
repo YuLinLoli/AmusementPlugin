@@ -5,33 +5,14 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Build ImageCheck Mirai Plugin
+name: ReleaseBuildImageCheck
 
 on:
   push:
-    branches:
-      - master
     tags:
       - 'v*'
 jobs:
-  dependency-submission:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
-      # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
-      - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
   CreateRelease:
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -69,30 +50,19 @@ jobs:
       - name: Success
         id: success
         run: echo "::set-output name=should_continue::true"
-  AutoBuild:
-    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+  dependency-submission:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      #安装使用jdk
       - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-        #执行构建
-      - name: Build with Gradle 7.6
-        uses: gradle/gradle-build-action@v3.3.2
-        with:
-          arguments: :buildPlugin
-        #取文件名
-      - name: Get Plugin Name
-        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
-        #上传工件
-      - name: Upload-Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.NAME }}
-          path: build/mirai/${{ env.NAME }}
+
+      # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
+      # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
