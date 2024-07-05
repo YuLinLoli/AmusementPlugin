@@ -30,7 +30,7 @@ jobs:
       # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-  create_release:
+  CreateRelease:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -66,9 +66,12 @@ jobs:
           prerelease: ${{ contains(github.ref, 'pre') }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
-      - name: stop
-        run: exit 1
-  build_and_test:
+      - name: Success
+        id: success
+        run: echo "::set-output name=should_continue::true"
+  AutoBuild:
+    needs: CreateRelease
+    if: ${{ needs.CreateRelease.outputs.should_continue != 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
