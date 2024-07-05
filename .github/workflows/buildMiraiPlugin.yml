@@ -47,15 +47,21 @@ jobs:
         with:
           arguments: :buildPlugin
         #取文件名
+      - name: Get Plugin Name
+        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
       - name: Get Plugin Name And Suffix
         run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \; | sed 's/\.mirai2.jar/-mirai/)" >> $GITHUB_ENV
-      - name: Get Plugin Name
-        run: echo "NAME_NO_SUFFIX=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
+
+      - name: Remove File Suffix
+        run: |
+          FILE_NAME="${{ env.NAME }}"
+          FILE_NAME_NO_SUFFIX="${FILE_NAME%.jar}"
+          echo "FILENAME_NO_SUFFIX=$FILE_NAME_NO_EXTENSION" >> $GITHUB_ENV
         #上传工件
       - name: Upload-Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.NAME_NO_SUFFIX }}
+          name: ${{ env.FILENAME_NO_SUFFIX }}
           path: build/mirai/${{ env.NAME }}
 
       #自动发布
