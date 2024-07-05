@@ -48,7 +48,7 @@ jobs:
           arguments: :buildPlugin
         #取文件名
       - name: Get Plugin Name And Suffix
-        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \; | sed 's/\.mirai.jar/-mirai/)" >> $GITHUB_ENV
+        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \; | sed 's/\.mirai2.jar/-mirai/)" >> $GITHUB_ENV
       - name: Get Plugin Name
         run: echo "NAME_NO_SUFFIX=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
         #上传工件
