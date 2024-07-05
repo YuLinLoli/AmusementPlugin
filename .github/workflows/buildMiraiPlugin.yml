@@ -70,8 +70,7 @@ jobs:
         id: success
         run: echo "::set-output name=should_continue::true"
   AutoBuild:
-    needs: CreateRelease
-    if: ${{ needs.CreateRelease.outputs.should_continue != 'true' }}
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
