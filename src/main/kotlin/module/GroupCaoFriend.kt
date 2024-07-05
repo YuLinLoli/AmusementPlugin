@@ -164,7 +164,7 @@ object GroupCaoFriend {
         }
         //如果在CD就回复在CD
         if (!CD) {
-            val times = (3600000 - (timeMillis - cdTime)) / 1000
+            val times = (AdminConfig.cdTime * 1000 - (timeMillis - cdTime)) / 1000
             logger.info("${event.sender.nameCardOrNick}(${event.sender.id})的CD还有${times}秒")
             event.group.sendMessage("请等待${times}秒后再使用“草群友”指令！！")
             return false

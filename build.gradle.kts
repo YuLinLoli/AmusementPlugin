@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.yulin"
-version = "1.0.7"
+version = "1.0.8"
 buildConfig {
     className("BuildConfig")
     packageName("com.yulin.cg")
