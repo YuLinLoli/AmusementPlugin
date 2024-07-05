@@ -11,79 +11,11 @@ on:
   push:
     branches:
       - master
-    tags:
-      - "v*"
 jobs:
-  auto-build-job:
-    if: !startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      #安装使用jdk
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-        #执行构建
-      - name: Build with Gradle 7.6
-        uses: gradle/gradle-build-action@v3.3.2
-        with:
-          arguments: :buildPlugin
-        #取文件名
-      - name: Get Plugin Name
-        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
-        #上传工件
-      - name: Upload-Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.NAME }}
-          path: build/mirai/${{ env.NAME }}
-  release-job:
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      #安装使用jdk
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-        #执行构建
-      - name: Build with Gradle 7.6
-        uses: gradle/gradle-build-action@v3.3.2
-        with:
-          arguments: :buildPlugin
-        #取文件名
-      - name: Get Plugin Name
-        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
-        #上传工件
-      - name: Upload-Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.NAME }}
-          path: build/mirai/${{ env.NAME }}
-        #自动发布
-      - name: Publish Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/mirai/${{ env.NAME }}"
-          prerelease: ${{ contains(github.ref, 'pre') }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
   dependency-submission:
-
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -97,3 +29,41 @@ jobs:
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      #安装使用jdk
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+        #执行构建
+      - name: Build with Gradle 7.6
+        uses: gradle/gradle-build-action@v3.3.2
+        with:
+          arguments: :buildPlugin
+        #取文件名
+      - name: Get Plugin Name And Suffix
+        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \; | sed 's/\.mirai.jar/-mirai/)" >> $GITHUB_ENV
+      - name: Get Plugin Name
+        run: echo "NAME_NO_SUFFIX=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
+        #上传工件
+      - name: Upload-Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME_NO_SUFFIX }}
+          path: build/mirai/${{ env.NAME }}
+
+      #自动发布
+      - name: Publish Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/mirai/${{ env.NAME }}"
+          prerelease: ${{ contains(github.ref, 'pre') }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
