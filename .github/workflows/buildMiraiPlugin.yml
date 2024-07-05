@@ -9,10 +9,13 @@ name: Build ImageCheck Mirai Plugin
 
 on:
   push:
+    branches:
+      - master
     tags:
       - "v*"
 jobs:
-  build:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -47,7 +50,34 @@ jobs:
           prerelease: ${{ contains(github.ref, 'pre') }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
+  autobuild:
+    if: !startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
+    steps:
+      #安装使用jdk
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+        #执行构建
+      - name: Build with Gradle 7.6
+        uses: gradle/gradle-build-action@v3.3.2
+        with:
+          arguments: :buildPlugin
+        #取文件名
+      - name: Get Plugin Name
+        run: echo "NAME=$(find build/mirai -name "*.jar" -exec basename {} \;)" >> $GITHUB_ENV
+        #上传工件
+      - name: Upload-Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME }}
+          path: build/mirai/${{ env.NAME }}
   dependency-submission:
 
     runs-on: ubuntu-latest
