@@ -4,7 +4,7 @@ package com.yulin.module
 import com.yulin.AmusementPlugin.logger
 import com.yulin.AmusementPlugin.save
 import com.yulin.config.AdminConfig
-import com.yulin.config.BlackListConfig.blackList
+import com.yulin.config.BlackListConfig
 import com.yulin.config.CdConfig
 import com.yulin.kotlinUtil.AdminAndMasterJudge
 import com.yulin.kotlinUtil.BlackGroupJudge
@@ -12,6 +12,7 @@ import com.yulin.kotlinUtil.ImageUtil
 import com.yulin.kotlinUtil.MathUtil.Companion.probability
 import com.yulin.pojo.GroupSender
 import com.yulin.pojo.Sender
+import kotlinx.coroutines.delay
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -35,6 +36,8 @@ object GroupCaoFriend {
                 logger.info("排除群，不执行草群友")
                 return
             }
+            //如果是黑名单就排除此人
+            if (BlackListConfig.blackList.contains(event.sender.id)) return
             //判断是否在CD中！
             if (!caoCdPd(event)) {
                 return
@@ -55,25 +58,24 @@ object GroupCaoFriend {
                 //排除主人
                 while (true) {
                     //随机出一位幸运儿
-                    val random = Random().nextInt(size - 1)
+                    val random = Random().nextInt(size)
                     //获取这位幸运儿
                     member = list.elementAt(random)
+                    //bug检测（
+                    if (member.id == 0L) {
+                        for (normalMember in list) {
+                            delay(370)
+                            event.bot.getFriend(AdminConfig.master)!!
+                                .sendMessage("${normalMember.nameCardOrNick}(${normalMember.id})")
+                        }
+                        event.bot.getFriend(AdminConfig.master)!!.sendMessage("触发bug（草到0的bug），打印了群成员列表")
+                    }
                     //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和botName喜结良缘❤”）
                     if (tFMaster) {
                         break
                     }
                     //如果是黑名单的qq，则排除他
-                    for (n in blackList) {
-                        //如果是黑名单qq则重新筛选幸运儿
-                        if (n.qq == member.id) {
-                            continue
-                        }
-                        //如果是黑名单qq触发的指令直接GG
-                        if (n.qq == event.sender.id) {
-                            println("黑名单QQ！${event.sender.id}")
-                            return
-                        }
-                    }
+                    if (BlackListConfig.blackList.contains(member.id)) continue
                     //如果幸运儿的ID不是主人的ID的话就继续执行程序，否则继续循环新的幸运儿
                     if (member.id != AdminConfig.master) {
                         break
@@ -86,16 +88,17 @@ object GroupCaoFriend {
                 //获取他的头像
                 val headImage = ImageUtil.getImage("https://q1.qlogo.cn/g?b=qq&s=0&nk=${member.id}", event)
                 message.add(event.sender.at())
-                if(!tFMaster && tFMe){
-                    message.add(" 恭喜你和自己喜结良缘❤（自交）(群人数分之1的概率)")
-                    event.group.sendMessage(message.build())
-                    return
-                }
-                if (tFMe){
+
+            if (tFMaster && tFMe) {
                     message.add(" ${botName}最喜欢主人啦！❤")
                     event.group.sendMessage(message.build())
                     return
                 }
+            if (tFMe) {
+                message.add(" 恭喜你和自己喜结良缘❤（自交）(群人数分之1的概率)")
+                event.group.sendMessage(message.build())
+                return
+            }
                 if (!tFMaster && probability(10)) {
 //                  i = "孤独终老"
                     message.add(" 万中无一，孤独终老。（百分之1的概率也能中快去抽卡买彩票.jpg）")

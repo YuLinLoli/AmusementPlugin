@@ -21,8 +21,8 @@ import com.yulin.module.MessageUtil.recallMessage
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.event.events.BotMuteEvent
 import net.mamoe.mirai.event.events.FriendMessageEvent
-import net.mamoe.mirai.event.events.GroupEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
 
@@ -83,8 +83,12 @@ object AmusementPlugin : KotlinPlugin(
             blackListShow(this)
             botNameLook(this)
         }
-        globalEventChannel().subscribeAlways<GroupEvent> {
-
+        globalEventChannel().subscribeAlways<BotMuteEvent> {
+            val b = group.quit()
+            if (b) {
+                bot.getFriend(AdminConfig.master)!!
+                    .sendMessage("在群：${group.name}(${group.id})内被禁言，机器人已退出该群")
+            }
         }
         CdConfig.save()
         GroupImageConfig.save()
