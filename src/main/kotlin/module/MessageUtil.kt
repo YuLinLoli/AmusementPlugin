@@ -27,7 +27,7 @@ object MessageUtil {
         }
         return false
     }
-    suspend fun currentTimestampToDay(millis: Long): String {
+    fun currentTimestampToDay(millis: Long): String {
         val totalSeconds = millis / 1000
         val totalMinutes = totalSeconds / 60
         val totalHours = totalMinutes / 60
