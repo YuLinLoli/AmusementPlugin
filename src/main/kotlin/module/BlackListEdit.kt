@@ -1,5 +1,6 @@
 package com.yulin.module
 
+import com.yulin.AmusementPlugin.save
 import com.yulin.config.BlackListConfig
 import com.yulin.kotlinUtil.AdminAndMasterJudge.isAdminOrMaster
 import com.yulin.module.MessageUtil.currentTimestampToDay
@@ -25,6 +26,7 @@ object BlackListEdit {
             //把加黑的qq分割出来“好友加黑123456-人品不行”
             val split = contentToString.split("黑")[1].split("-")
             BlackListConfig.blackList.add(BlackSender(split[0].toLong(), split[1]))
+            BlackListConfig.save()
             event.subject.sendMessage("添加${split[0].toLong()}黑名单成功！")
         }
     }
@@ -37,6 +39,7 @@ object BlackListEdit {
                 return
             }
             BlackListConfig.memberDontWantToCao.add(Sender(event.sender.id, System.currentTimeMillis()))
+            BlackListConfig.save()
             event.subject.sendMessage("已经添加黑名单，以后都不会被草了(也不能草别人了)！")
         }
     }
@@ -51,6 +54,7 @@ object BlackListEdit {
             if (System.currentTimeMillis() - sender.cd > 2678400000L) {
                 BlackListConfig.memberDontWantToCao.remove(sender)
                 event.subject.sendMessage("已经删除黑名单，以后都会被草了！")
+                BlackListConfig.save()
                 return
             }
             val currentTimestampToDay =
@@ -78,6 +82,7 @@ object BlackListEdit {
             }
 
             if (BlackListConfig.blackList.removeIf { it.qid == at.target }) {
+                BlackListConfig.save()
                 event.subject.sendMessage("删除" + at.target + "黑名单成功！")
             }
             return
@@ -90,6 +95,7 @@ object BlackListEdit {
             return
         }
         if (BlackListConfig.blackList.remove(sender)) {
+            BlackListConfig.save()
             event.subject.sendMessage("删除" + l + "黑名单成功！")
             return
         }

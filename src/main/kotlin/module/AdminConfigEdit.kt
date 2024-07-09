@@ -140,6 +140,7 @@ object AdminConfigEdit {
                 } else {
                     groupId = event.subject.id
                     AdminConfig.blackGroupList.remove(groupId)
+                    AdminConfig.save()
                     if (event.message.contentToString().contains("con")) {
                         event.subject.sendMessage("开启本群群功能：草群友")
                         return
