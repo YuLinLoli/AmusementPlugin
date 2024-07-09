@@ -11,6 +11,7 @@ import com.yulin.kotlinUtil.ImageUtil
 import com.yulin.module.AdminConfigEdit.isMaster
 import com.yulin.pojo.GroupSender
 import com.yulin.pojo.Sender
+import kotlinx.coroutines.delay
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -48,9 +49,18 @@ object GroupCaoFriend {
             val list = event.group.members
             val size = list.size
             //随机出一位幸运儿
-            val random = Random().nextInt(size - 1)
+            val random = Random().nextInt(size)
             //获取这位幸运儿
             val member = list.elementAt(random)
+            //bug检测（
+            if (member.id == 0L) {
+                for (normalMember in list) {
+                    delay(370)
+                    event.bot.getFriend(AdminConfig.master)!!
+                        .sendMessage("${normalMember.nameCardOrNick}(${normalMember.id})")
+                }
+                event.bot.getFriend(AdminConfig.master)!!.sendMessage("触发bug（草到0的bug），打印了群成员列表")
+            }
             //判断是不是自己草到了自己
             val tFMe = event.sender.id == member.id
             //获取他的头像
