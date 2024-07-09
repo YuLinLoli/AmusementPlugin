@@ -125,7 +125,7 @@ object GroupCaoFriend {
                 }
                 if (!tFMaster && probability(30)) {
 //                  i = "就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚"
-                    message.add(" 就凭你也想草别人？不赶紧补补身子，别让别人笑话你肾虚!(3%概率)")
+                    message.add(" 该补身子了，老弟！(3%概率)")
                     event.group.sendMessage(message.build())
                     return
                 }
