@@ -14,6 +14,8 @@ import com.yulin.module.AdminConfigEdit.blackListShow
 import com.yulin.module.AdminConfigEdit.botNameLook
 import com.yulin.module.AdminConfigEdit.botNameSetting
 import com.yulin.module.BlackListEdit.blackListMain
+import com.yulin.module.BlackListEdit.memberAdd
+import com.yulin.module.BlackListEdit.memberDel
 import com.yulin.module.GroupCaoFriend.cao
 import com.yulin.module.GroupImageEdit.Companion.imageAdd
 import com.yulin.module.GroupImageEdit.Companion.sendImage
@@ -50,6 +52,8 @@ object AmusementPlugin : KotlinPlugin(
         //监听群消息
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
             //黑名单插件执行
+            memberAdd(this)
+            memberDel(this)
             blackListMain(this)
             //撤回被引用的消息
             recallMessage(this)

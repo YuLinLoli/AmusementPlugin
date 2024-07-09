@@ -2,6 +2,8 @@ package com.yulin.module
 
 import com.yulin.config.BlackListConfig
 import com.yulin.kotlinUtil.AdminAndMasterJudge.isAdminOrMaster
+import com.yulin.module.MessageUtil.currentTimestampToDay
+import com.yulin.pojo.Sender
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.findIsInstance
@@ -26,6 +28,30 @@ object BlackListEdit {
         }
     }
 
+    suspend fun memberAdd(event: MessageEvent) {
+        if (event.message.contentToString() == "我以后不想被草也不想草别人了") {
+            BlackListConfig.memberDontWantToCao.add(Sender(event.sender.id, System.currentTimeMillis()))
+            event.subject.sendMessage("已经添加黑名单，以后都不会被草了(也不能草别人了)！")
+        }
+    }
+
+    suspend fun memberDel(event: MessageEvent) {
+        if (event.message.contentToString() == "我想被草了") {
+            for (sender in BlackListConfig.memberDontWantToCao) {
+                if (sender.qid == event.sender.id) {
+                    if (System.currentTimeMillis() - sender.cd > 2678400000L) {
+                        BlackListConfig.memberDontWantToCao.remove(sender)
+                        event.subject.sendMessage("已经删除黑名单，以后都会被草了！")
+                        return
+                    }
+                    val currentTimestampToDay =
+                        currentTimestampToDay(2678400000L - (System.currentTimeMillis() - sender.cd))
+                    event.subject.sendMessage("还剩下${currentTimestampToDay}才可以解除黑名单！")
+                    return
+                }
+            }
+        }
+    }
     private suspend fun del(event: MessageEvent): Boolean {
         val contentToString = event.message.contentToString()
         if (!contentToString.startsWith("去黑")){

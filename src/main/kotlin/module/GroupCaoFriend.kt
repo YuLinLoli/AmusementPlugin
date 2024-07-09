@@ -36,6 +36,11 @@ object GroupCaoFriend {
                 logger.info("排除群，不执行草群友")
                 return
             }
+            for (s in BlackListConfig.memberDontWantToCao) {
+                if (s.qid == event.sender.id) {
+                    return
+                }
+            }
             //如果是黑名单就排除此人
             if (BlackListConfig.blackList.contains(event.sender.id)) return
             //判断是否在CD中！
@@ -70,12 +75,19 @@ object GroupCaoFriend {
                         }
                         event.bot.getFriend(AdminConfig.master)!!.sendMessage("触发bug（草到0的bug），打印了群成员列表")
                     }
+                    var bbb = false
+                    for (s in BlackListConfig.memberDontWantToCao) {
+                        if (s.qid == member.id) {
+                            bbb = true
+                        }
+                    }
+                    if (bbb) continue
+                    //如果是黑名单的qq，则排除他
+                    if (BlackListConfig.blackList.contains(member.id)) continue
                     //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和botName喜结良缘❤”）
                     if (tFMaster) {
                         break
                     }
-                    //如果是黑名单的qq，则排除他
-                    if (BlackListConfig.blackList.contains(member.id)) continue
                     //如果幸运儿的ID不是主人的ID的话就继续执行程序，否则继续循环新的幸运儿
                     if (member.id != AdminConfig.master) {
                         break

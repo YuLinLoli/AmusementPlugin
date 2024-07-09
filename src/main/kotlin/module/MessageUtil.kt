@@ -27,7 +27,17 @@ object MessageUtil {
         }
         return false
     }
+    suspend fun currentTimestampToDay(millis: Long): String {
+        val totalSeconds = millis / 1000
+        val totalMinutes = totalSeconds / 60
+        val totalHours = totalMinutes / 60
+        val totalDays = totalHours / 24
 
+        val days = totalDays
+        val hours = totalHours % 24
+        val minutes = totalMinutes % 60
+        return "${totalDays}天${totalHours}时${totalMinutes}分"
+    }
     /**
      * 找到消息链中的第一个@
      * @param event 群消息事件
