@@ -69,7 +69,7 @@ object AmusementPlugin : KotlinPlugin(
             botNameLook(this)
             //添加表情图片执行
             val b = imageAdd(this)
-            if (!b){
+            if (!b) {
                 sendImage(this)
             }
 

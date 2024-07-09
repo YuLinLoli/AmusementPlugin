@@ -38,23 +38,23 @@ class ImageUtil {
         /**
          * 从本地加载Image
          */
-        suspend fun loadImage(event: MessageEvent,imageName: String): Image?{
+        suspend fun loadImage(event: MessageEvent, imageName: String): Image? {
             try {
                 val s =
                     AmusementPlugin.dataFolderPath.pathString + File.separator + "image" + File.separator + imageName
                 val file = File(s)
-                if (file.exists()){
+                if (file.exists()) {
                     println("error in loadImage!62")
                     return null
                 }
                 return withContext(Dispatchers.IO) {
-                    FileInputStream(file).use {  file->
-                        file.toExternalResource().use {  externalResource->
+                    FileInputStream(file).use { file ->
+                        file.toExternalResource().use { externalResource ->
                             externalResource.uploadAsImage(event.subject)
                         }
                     }
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 println(e.message)
                 println("error in loadImage!65")
                 return null
@@ -96,12 +96,12 @@ class ImageUtil {
 
 
                 val imagePath = AmusementPlugin.dataFolderPath.resolve("image")
-                if (!imagePath.exists()){
+                if (!imagePath.exists()) {
                     imagePath.createDirectory()
                 }
                 withContext(Dispatchers.IO) {
                     infoStream.use {
-                        FileOutputStream(imagePath.pathString + File.separator + imageName).use {  it1->
+                        FileOutputStream(imagePath.pathString + File.separator + imageName).use { it1 ->
                             it1.write(it.toByteArray())
                         }
                     }
@@ -134,16 +134,16 @@ class ImageUtil {
             }
         }
 
-        private suspend fun uploadAsImage(response: Response, event: MessageEvent): Image?{
+        private suspend fun uploadAsImage(response: Response, event: MessageEvent): Image? {
             return try {
-                response.use {  response1->
-                    response1.body?.byteStream()?.use {  byteStream->
-                        byteStream.toExternalResource().use {  toExternalResource->
+                response.use { response1 ->
+                    response1.body?.byteStream()?.use { byteStream ->
+                        byteStream.toExternalResource().use { toExternalResource ->
                             toExternalResource.uploadAsImage(event.subject)
                         }
                     }
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 null
             }

@@ -58,21 +58,22 @@ object AdminConfigEdit {
      * @param event 可以是群或者私聊的事件
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
-    suspend fun adminSetting(event: MessageEvent){
-        if (AdminAndMasterJudge.isMaster(event) && event.message.contentToString().contains("设置管理员")){
+    suspend fun adminSetting(event: MessageEvent) {
+        if (AdminAndMasterJudge.isMaster(event) && event.message.contentToString().contains("设置管理员")) {
             AdminConfig.adminList.add(event.message.contentToString().split("员")[1].toLong())
             AdminConfig.save()
             event.subject.sendMessage("已经成功设定管理员：${event.message.contentToString().split("员")[1]}")
 
         }
     }
+
     /**
      * 取消插件管理员，只能master来设定
      * @param event 可以是群或者私聊的事件
      * @author 岚雨凛<cheng_ying@outlook.com>
      */
-    suspend fun adminSettingQc(event: MessageEvent){
-        if (AdminAndMasterJudge.isMaster(event) && event.message.contentToString().contains("取消管理员")){
+    suspend fun adminSettingQc(event: MessageEvent) {
+        if (AdminAndMasterJudge.isMaster(event) && event.message.contentToString().contains("取消管理员")) {
             AdminConfig.adminList.remove(event.message.contentToString().split("员")[1].toLong())
             AdminConfig.save()
             event.subject.sendMessage("已经成功取消管理员：${event.message.contentToString().split("员")[1]}")
@@ -149,7 +150,6 @@ object AdminConfigEdit {
             }
         }
     }
-
 
 
     /**

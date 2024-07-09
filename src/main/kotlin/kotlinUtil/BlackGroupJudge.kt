@@ -9,7 +9,7 @@ object BlackGroupJudge {
      * 判断是否是黑名单的群
      * @return ture or false
      */
-    fun blackGroupPd(event:GroupMessageEvent): Boolean{
+    fun blackGroupPd(event: GroupMessageEvent): Boolean {
         return AdminConfig.blackGroupList.contains(event.group.id)
     }
 
