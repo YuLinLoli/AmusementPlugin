@@ -2,7 +2,6 @@ package com.yulin.module
 
 
 import com.yulin.AmusementPlugin.logger
-import com.yulin.AmusementPlugin.reload
 import com.yulin.AmusementPlugin.save
 import com.yulin.config.AdminConfig
 import com.yulin.config.CdConfig
@@ -113,72 +112,33 @@ object GroupCaoFriend {
         val gid = event.group.id
         //qq
         val qid = event.sender.id
-        //判断配置文件内是否有该群
-        var gTF = false
-        //判断是否有该群成员
-        var qTf = false
-        //最后的返回值！
-        var CD = false
-        //如果有CD就设值！
-        var cdTime = 0L
         //判断是否为主人发的
-        if (event.sender.id == AdminConfig.master) {
+        if (qid == AdminConfig.master) {
             return true
         }
+        val groupSenderList = CdConfig.groupSender.find { it.gid == gid }
         //第一次创建文件！
-        CdConfig.reload()
-        if (CdConfig.groupSender.isEmpty()) {
-            val list: MutableList<Sender> = listOf<Sender>().toMutableList()
+        if (CdConfig.groupSender.size == 0 || groupSenderList == null) {
+            val list: MutableList<Sender> = mutableListOf()
             list.add(Sender(qid, timeMillis))
             CdConfig.groupSender.add(GroupSender(gid, list))
             CdConfig.save()
             return true
         }
-        //判断是否在CD中
-        for (g in CdConfig.groupSender) {
-            if (g.gid == gid) {
-                gTF = true
-                for (q in g.sender) {
-                    //如果能找到此群成员对象就赋予CD！并让流程继续执行
-                    if (qid == q.qid) {
-                        //如果进去了就设置新的CD
-                        if (timeMillis - q.cd > AdminConfig.cdTime * 1000) {
-                            q.cd = timeMillis
-                            CdConfig.save()
-                            CD = true
-                        }
-                        cdTime = q.cd
-                        qTf = true
-                    }
-                }
-            }
-
-        }
-        //判断是否有该群，没有就创建群把成员CD加入
-        if (!gTF) {
-            val list: MutableList<Sender> = listOf<Sender>().toMutableList()
-            list.add(Sender(qid, timeMillis))
-            CdConfig.groupSender.add(GroupSender(gid, list))
+        val sender = groupSenderList.sender.find { it.qid == qid }
+        if (sender == null) {
+            groupSenderList.sender.add(Sender(qid, timeMillis))
             CdConfig.save()
             return true
         }
-        //判断是否有该群友，没有就加入
-        if (!qTf) {
-            for (g in CdConfig.groupSender) {
-                if (g.gid == gid) {
-                    g.sender.add(Sender(qid, timeMillis))
-                    CdConfig.save()
-                    return true
-                }
-            }
+        if (timeMillis - sender.cd > 3600000) {
+            sender.cd = timeMillis
+            CdConfig.save()
+            return true
         }
-        //如果在CD就回复在CD
-        if (!CD) {
-            val times = (AdminConfig.cdTime * 1000 - (timeMillis - cdTime)) / 1000
-            logger.info("${event.sender.nameCardOrNick}(${event.sender.id})的CD还有${times}秒")
-            event.group.sendMessage("请等待${times}秒后再使用“草群友”指令！！")
-            return false
-        }
-        return true
+        val times = (3600000 - (timeMillis - sender.cd)) / 1000
+        logger.info("CD还有${times}")
+        event.group.sendMessage("请等待${times}秒后再使用“草群友”指令！！")
+        return false
     }
 }
