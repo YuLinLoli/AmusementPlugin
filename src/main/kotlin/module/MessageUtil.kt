@@ -33,10 +33,9 @@ object MessageUtil {
         val totalHours = totalMinutes / 60
         val totalDays = totalHours / 24
 
-        val days = totalDays
         val hours = totalHours % 24
         val minutes = totalMinutes % 60
-        return "${totalDays}天${totalHours}时${totalMinutes}分"
+        return "${totalDays}天${hours}时${minutes}分"
     }
     /**
      * 找到消息链中的第一个@
