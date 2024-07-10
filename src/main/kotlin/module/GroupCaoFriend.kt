@@ -131,12 +131,12 @@ object GroupCaoFriend {
             CdConfig.save()
             return true
         }
-        if (timeMillis - sender.cd > 3600000) {
+        if (timeMillis - sender.cd > AdminConfig.cdTime * 1000) {
             sender.cd = timeMillis
             CdConfig.save()
             return true
         }
-        val times = (3600000 - (timeMillis - sender.cd)) / 1000
+        val times = (AdminConfig.cdTime * 1000 - (timeMillis - sender.cd)) / 1000
         logger.info("CD还有${times}")
         event.group.sendMessage("请等待${times}秒后再使用“草群友”指令！！")
         return false
