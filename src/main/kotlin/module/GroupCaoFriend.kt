@@ -72,7 +72,7 @@ object GroupCaoFriend {
                     event.bot.getFriend(AdminConfig.master)!!.sendMessage("触发bug（草到0的bug），打印了群成员列表")
                 }
                 //如果是黑名单的qq，则排除他
-                if (BlackListConfig.memberDontWantToCao.find { it.qid == event.sender.id } != null) continue
+                if (BlackListConfig.memberDontWantToCao.find { it.qid == member.id } != null) continue
                 if (BlackListConfig.blackList.find { it.qid == member.id } != null) continue
                 //如果是主人自己触发的指令，则跳出循环（如果主人草到自己在下面会处理为“恭喜主人和botName喜结良缘❤”）
                 if (tFMaster) {
