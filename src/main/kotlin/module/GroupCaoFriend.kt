@@ -11,6 +11,7 @@ import com.yulin.module.AdminConfigEdit.isMaster
 import com.yulin.pojo.GroupSender
 import com.yulin.pojo.Sender
 import kotlinx.coroutines.delay
+import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -47,10 +48,17 @@ object GroupCaoFriend {
             var i = ""
             val list = event.group.members
             val size = list.size
-            //随机出一位幸运儿
-            val random = Random().nextInt(size)
-            //获取这位幸运儿
-            val member = list.elementAt(random)
+            var member: NormalMember
+            while (true) {
+                //随机出一位幸运儿
+                val random = Random().nextInt(size)
+                //获取这位幸运儿
+                member = list.elementAt(random)
+                if (member.id == 2854196310L) {
+                    continue
+                }
+                break
+            }
             //bug检测（
             if (member.id == 0L) {
                 for (normalMember in list) {
