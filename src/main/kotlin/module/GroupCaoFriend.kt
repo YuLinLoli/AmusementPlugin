@@ -7,7 +7,6 @@ import com.yulin.config.AdminConfig
 import com.yulin.config.CdConfig
 import com.yulin.kotlinUtil.BlackGroupJudge
 import com.yulin.kotlinUtil.ImageUtil
-import com.yulin.module.AdminConfigEdit.isMaster
 import com.yulin.pojo.GroupSender
 import com.yulin.pojo.Sender
 import kotlinx.coroutines.delay
@@ -38,8 +37,6 @@ object GroupCaoFriend {
             if (!caoCdPd(event)) {
                 return
             }
-            //判断是不是主人
-            val tFMaster = isMaster(event)
 
             //创建消息
             val message = MessageChainBuilder()
@@ -47,18 +44,13 @@ object GroupCaoFriend {
             val randomPd = Random().nextInt(100)
             var i = ""
             val list = event.group.members
+            val member: NormalMember
+            list.remove(2854196310L)
+            list.remove(AdminConfig.master)
             val size = list.size
-            var member: NormalMember
-            while (true) {
-                //随机出一位幸运儿
-                val random = Random().nextInt(size)
-                //获取这位幸运儿
-                member = list.elementAt(random)
-                if (member.id == 2854196310L) {
-                    continue
-                }
-                break
-            }
+            val random = Random().nextInt(size)
+            //获取这位幸运儿
+            member = list.elementAt(random)
             //bug检测（
             if (member.id == 0L) {
                 for (normalMember in list) {
@@ -76,10 +68,10 @@ object GroupCaoFriend {
             //如果没有草到自己
             if (!tFMe) {
                 //不是主人且值小于1
-                if (!tFMaster && randomPd < 1) {
+                if (randomPd < 1) {
                     i = "孤独终老"
                     message.add(" 万中无一，孤独终老。（百分之1的概率也能中快去抽卡买彩票.jpg）")
-                } else if (!tFMaster && randomPd < 6) {
+                } else if (randomPd < 6) {
                     i = "草歪了"
                     message.add(" 呜呜呜，只因无力(╯‵□′)╯︵┻━┻，你直接日歪了，细狗")
                 } else if (randomPd <= 75) {
