@@ -17,7 +17,7 @@ import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.at
-import java.util.*
+import java.security.SecureRandom
 
 /**
  * 草群友模块（将来可添加被草模块）
@@ -64,7 +64,7 @@ object GroupCaoFriend {
             }
             // 随机选择一个群成员
             //随机出一位幸运儿
-            val random = Random().nextInt(list.size)
+            val random = SecureRandom().nextInt(list.size)
             //获取这位幸运儿
             val member = list.elementAt(random)
             // 检查是否触发了bug（选到了id为0的成员），如果是，则向管理员发送所有群成员的列表
