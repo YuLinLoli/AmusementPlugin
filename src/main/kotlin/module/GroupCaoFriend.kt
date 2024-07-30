@@ -15,7 +15,7 @@ import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageChainBuilder
-import java.util.*
+import java.security.SecureRandom
 
 /**
  * 草群友模块（将来可添加被草模块）
@@ -41,14 +41,14 @@ object GroupCaoFriend {
             //创建消息
             val message = MessageChainBuilder()
             //创建判断用的随机数
-            val randomPd = Random().nextInt(100)
+            val randomPd = SecureRandom().nextInt(100)
             var i = ""
             val list = event.group.members
             val member: NormalMember
             list.remove(2854196310L)
             list.remove(AdminConfig.master)
             val size = list.size
-            val random = Random().nextInt(size)
+            val random = SecureRandom().nextInt(size)
             //获取这位幸运儿
             member = list.elementAt(random)
             //bug检测（
