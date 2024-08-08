@@ -40,7 +40,7 @@ object GroupCaoFriend {
 
             //创建消息
             val message = MessageChainBuilder()
-            //创建判断用的随机数
+            //创建判断事件用的随机数
             val randomPd = SecureRandom().nextInt(100)
             var i = ""
             val list = event.group.members
@@ -48,6 +48,7 @@ object GroupCaoFriend {
             list.remove(2854196310L)
             list.remove(AdminConfig.master)
             val size = list.size
+            //判断群友的随机数
             val random = SecureRandom().nextInt(size)
             //获取这位幸运儿
             member = list.elementAt(random)
