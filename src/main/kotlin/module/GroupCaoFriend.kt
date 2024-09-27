@@ -9,7 +9,6 @@ import com.yulin.kotlinUtil.BlackGroupJudge
 import com.yulin.kotlinUtil.ImageUtil
 import com.yulin.pojo.GroupSender
 import com.yulin.pojo.Sender
-import kotlinx.coroutines.delay
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -44,7 +43,7 @@ object GroupCaoFriend {
             val randomPd = SecureRandom().nextInt(100)
             var i = ""
             val list = event.group.members
-            val member: NormalMember
+            var member: NormalMember
             list.remove(2854196310L)
             list.remove(AdminConfig.master)
             val size = list.size
@@ -52,14 +51,10 @@ object GroupCaoFriend {
             val random = SecureRandom().nextInt(size)
             //获取这位幸运儿
             member = list.elementAt(random)
-            //bug检测（
+            //bug处理（
             if (member.id == 0L) {
-                for (normalMember in list) {
-                    delay(370)
-                    event.bot.getFriend(AdminConfig.master)!!
-                        .sendMessage("${normalMember.nameCardOrNick}(${normalMember.id})")
-                }
-                event.bot.getFriend(AdminConfig.master)!!.sendMessage("触发bug（草到0的bug），打印了群成员列表")
+                list.remove(member.id)
+                member = list.elementAt(random - 1)
             }
             //判断是不是自己草到了自己
             val tFMe = event.sender.id == member.id
