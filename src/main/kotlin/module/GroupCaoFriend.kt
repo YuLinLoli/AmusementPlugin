@@ -12,7 +12,7 @@ import com.yulin.kotlinUtil.ImageUtil
 import com.yulin.kotlinUtil.MathUtil.Companion.probability
 import com.yulin.pojo.GroupSender
 import com.yulin.pojo.Sender
-import kotlinx.coroutines.delay
+import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageChainBuilder
@@ -56,26 +56,22 @@ object GroupCaoFriend {
             val message = MessageChainBuilder()
             // 获取群成员列表，过滤掉黑名单和特定成员
             val memberList = event.group.members
-            val list = memberList.filterNot { r ->
+            val list: MutableList<NormalMember> = memberList.filterNot { r ->
                 BlackListConfig.memberDontWantToCao.any { it.qid == r.id } ||
                         BlackListConfig.blackList.any { it.qid == r.id } ||
                         r.id == 2854196310L ||
                         r.id == AdminConfig.master
-            }
+            } as MutableList<NormalMember>
             // 随机选择一个群成员
             //随机出一位幸运儿
-            val random = SecureRandom().nextInt(list.size)
+            var random = SecureRandom().nextInt(list.size)
             //获取这位幸运儿
-            val member = list.elementAt(random)
-            // 检查是否触发了bug（选到了id为0的成员），如果是，则向管理员发送所有群成员的列表
+            var member = list.elementAt(random)
             //bug检测（
             if (member.id == 0L) {
-                for (normalMember in list) {
-                    delay(370)
-                    event.bot.getFriend(AdminConfig.master)!!
-                        .sendMessage("${normalMember.nameCardOrNick}(${normalMember.id})")
-                }
-                event.bot.getFriend(AdminConfig.master)!!.sendMessage("触发bug（草到0的bug），打印了群成员列表")
+                list.remove(member)
+                random = SecureRandom().nextInt(list.size - 1)
+                member = list.elementAt(random)
             }
             // 检查是否草到了自己
             //判断是不是自己草到了自己
