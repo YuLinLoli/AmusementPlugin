@@ -48,13 +48,14 @@ object GroupCaoFriend {
             list.remove(AdminConfig.master)
             val size = list.size
             //判断群友的随机数
-            val random = SecureRandom().nextInt(size)
+            var random = SecureRandom().nextInt(size)
             //获取这位幸运儿
             member = list.elementAt(random)
             //bug处理（
             if (member.id == 0L) {
                 list.remove(member.id)
-                member = list.elementAt(random - 1)
+                random = SecureRandom().nextInt(list.size - 1)
+                member = list.elementAt(random)
             }
             //判断是不是自己草到了自己
             val tFMe = event.sender.id == member.id
